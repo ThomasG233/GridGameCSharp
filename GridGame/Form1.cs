@@ -17,7 +17,7 @@ namespace GridGame
         {
             InitializeComponent();
             menuStrip();
-            InitMenu();
+            initMenu();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -26,7 +26,7 @@ namespace GridGame
         }
 
         // Display the main menu
-        private void InitMenu()
+        private void initMenu()
         {
             Button btnStart = new Button();
             Button btnRules = new Button();
@@ -44,6 +44,7 @@ namespace GridGame
             boat.Location = new Point(this.ClientSize.Width / 2 - 100, this.ClientSize.Height / 2 - 225);
 
             btnStart.Click += new EventHandler(this.btnStartEvent_Click);
+            btnRules.Click += new EventHandler(this.btnRulesEvent_Click);
 
             Controls.Add(btnStart);
             Controls.Add(btnRules);
@@ -67,13 +68,15 @@ namespace GridGame
             btns[1].Text = "Normal";
             btns[2].Text = "Hard";
 
-            foreach (Button btn in btns)
+            for (int i = 0; i < btns.Length; i++)
             {
-                Controls.Add(btn);
+                btns[i].Click += new EventHandler(this.btnGameStartEvent_Click); // after clicking difficulty, set game
+                Controls.Add(btns[i]);
             }
         }
 
         // Clears the form and re-initialises with the menu strip intact
+        // (Clearance of form allows for switches between main menu to game screen)
         private void clearForm()
         {
             this.Controls.Clear();
@@ -90,10 +93,17 @@ namespace GridGame
             options.MenuItems.Add(new MenuItem("&Toggle Music On/Off"));
             options.MenuItems.Add(new MenuItem("&Exit"));
             this.Menu = strip;
-            MenuItem rules = strip.MenuItems.Add("&Rules");
-            rules.MenuItems.Add(new MenuItem("&Rules"));
+            MenuItem rules = strip.MenuItems.Add("&Rules", btnRulesEvent_Click);
             this.Menu = strip;
             strip.GetForm().BackColor = Color.LightCyan;
+        }
+        
+        void btnGameStartEvent_Click(object sender, EventArgs e)
+        {
+            clearForm();
+            
+            // insert game code
+            // currently all difficulties direct to this event
         }
 
         // Start button click event, leads directly to difficulty menu
@@ -103,11 +113,22 @@ namespace GridGame
             difficultyMenu();
         }
 
+        void btnRulesEvent_Click(object sender, EventArgs e)
+        {
+            string msg1 = "The object of Battleship is to try and sink all of the other player's before they sink all of your ships. All of the other player's ships are somewhere on his/her board.  You try and hit them by clicking one of the squares on the board.  The other player will also try to hit your ships in turns.  Neither you nor the other player can see the other's board so you must try to guess where they are.";
+            string msg2 = "Each player places the 5 ships somewhere on their board.  The ships can only be placed vertically or horizontally. Diagonal placement is not allowed. No part of a ship may hang off the edge of the board.  Ships may not overlap each other.  No ships may be placed on another ship. \r\n\r\nOnce the guessing begins, the players may not move the ships.\r\n\r\nThe 5 ships are:  Carrier (occupies 5 spaces), Battleship (4), Cruiser (3), Submarine (3), and Destroyer (2).";
+            string msg3 = "Player's take turns guessing by clicking on the grid squares. Upon guessing, a red X will be marked for hit, and a white O for miss. For example, if you click F6 and your opponent does not have any ship located at F6, that grid square will be marked with a white O. \r\n\r\nWhen all of the squares that one your ships occupies have been hit, the ship will be sunk. As soon as all of one player's ships have been sunk, the game ends.";
+            string caption = "Rules";
+            MessageBox.Show(msg1, caption);
+            MessageBox.Show(msg2, caption);
+            MessageBox.Show(msg3, caption);
+        }
+
         // Strip "Main Menu" event click
         void stripMainMenuEvent_Click(object sender, EventArgs e)
         {
             clearForm();
-            InitMenu();
+            initMenu();
         }
     }
 }
