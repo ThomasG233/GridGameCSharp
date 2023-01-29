@@ -10,9 +10,33 @@ using System.Windows.Forms;
 
 namespace GridGame
 {
+
+    /* have put this here as it may come in use later.
+     * idea was hold all needed variables for the gameplay.
+    */
     public partial class Form1 : Form
     {
+        class GameSettings
+        {
+            int difficulty;
+            bool[,] board1 = new bool[9, 9];
+            bool[,] board2 = new bool[9, 9];
+
+            void setDifficulty(int diff)
+            {
+                difficulty = diff;
+            }
+        }
+
         Font menuFont = new Font("Times New Roman", 18.0f);
+        /* Had to make the grids for the selection screen global variables, so that the necessary checks can be performed.
+         * i.e. when you confirm your ship placements, isSelectionValid() must be called.
+         * you can't really use the button grid as a parameter into the method as they're already placed
+         * BtnPlayer2Grid represents the CPU, but in case we do 2 player, i've made it public too.
+        */
+        Button[,] BtnPlayer1Grid;
+        Button[,] BtnPlayer2Grid;
+        GameSettings gameSettings = new GameSettings();
         public Form1()
         {
             InitializeComponent();
@@ -20,9 +44,115 @@ namespace GridGame
             initMenu();
         }
 
+        // needed to access code easily on opening the files
         private void Form1_Load(object sender, EventArgs e)
         {
 
+        }
+
+        // Ship Selection Screen visuals.
+        private void initShipSelect()
+        {
+            BtnPlayer1Grid = new Button[9, 9];
+    
+            Button BtnConfirm = new Button();
+            Label LblInstructions = new Label();
+            // still need to add these to the side of the grid.
+            Label[] LblGridTop = new Label[9];
+            Label[] LblGridBottom = new Label[9];
+
+            LblInstructions.Text = "Please select your ship locations:";
+            LblInstructions.SetBounds((int)(this.ClientSize.Width / 3.6) , 25, 400, 30);
+            LblInstructions.TextAlign = ContentAlignment.TopCenter;
+            LblInstructions.Font = menuFont;
+
+            BtnConfirm.SetBounds((int)(this.ClientSize.Width / 2) - 60, (int)(this.ClientSize.Height / 1.25), 100, 50);
+            BtnConfirm.Text = "Confirm";
+            BtnConfirm.Font = menuFont;
+            BtnConfirm.Click += new EventHandler(BtnConfirmEvent_Click);
+
+            for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
+            {
+                
+                for (int y = 0; y < BtnPlayer1Grid.GetLength(1); y++)
+                { 
+                    // Create all buttons on the grid.
+                    BtnPlayer1Grid[x, y] = new Button();
+                    BtnPlayer1Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.33333) + (40 * x), ((int)(this.ClientSize.Height / 9)) + (40 * y), 40, 40);
+                    BtnPlayer1Grid[x, y].BackColor = Color.PowderBlue;
+
+                    BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnPlayer1GridEvent_Click);
+
+                    Controls.Add(BtnPlayer1Grid[x,y]);
+                }
+            }
+            Controls.Add(LblInstructions);
+            Controls.Add(BtnConfirm);
+        }
+        // Change colour of grid button when clicked.
+        // still need to add further checks
+        void BtnPlayer1GridEvent_Click(object sender, EventArgs e)
+        {
+            // Checks to see if the ship has already been placed in cell.
+            if (((Button)sender).BackColor != Color.Gray)
+            {  
+                // Places ship within cell of grid.
+                ((Button)sender).BackColor = Color.Gray;
+            }
+            else
+            {
+                // Unselects the cell in the grid where ship was.
+                ((Button)sender).BackColor = Color.PowderBlue;
+            }
+        }
+        // Confirm the grid placements.
+        void BtnConfirmEvent_Click(object sender, EventArgs e)
+        {
+            // Check if the selections made are valid.
+            if (isSelectionValid())
+            {
+                for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
+                {
+                    for (int y = 0; y < BtnPlayer1Grid.GetLength(1); y++)
+                    {
+                        // If the cell has been selected by the user
+                        if (BtnPlayer1Grid[x, y].BackColor == Color.Gray)
+                        {
+                            // need to program to transfer over to gameSettings object
+                        }
+                    }
+                }
+                clearForm();              
+                // Clear array so it's not taking up memory.
+                BtnPlayer1Grid = null;
+            }
+            else
+            {
+                MessageBox.Show("Invalid amount of ship placements.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        // Check the player's selections to see if it's valid.
+        bool isSelectionValid()
+        {
+            int numberOfShipGrids = 0;
+            // Count all of the number of grid cells selected.
+            for(int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
+            {
+                for (int y = 0; y < BtnPlayer1Grid.GetLength(0); y++)
+                {
+                    if(BtnPlayer1Grid[x,y].BackColor == Color.Gray)
+                    {
+                        numberOfShipGrids++;
+                    }
+                }
+            }
+            // Minimum number of cells selected needs to be 17.
+            if(numberOfShipGrids != 17)
+            {
+                return false;
+            }
+            return true;
         }
 
         // Display the main menu
@@ -33,6 +163,7 @@ namespace GridGame
             
             btnStart.SetBounds(this.ClientSize.Width / 2 - 50, this.ClientSize.Height / 2, 100, 50);
             btnRules.SetBounds(this.ClientSize.Width / 2 - 50, this.ClientSize.Height / 2 + 75, 100, 50);
+
             btnStart.Font = menuFont;
             btnRules.Font = menuFont;
             btnStart.Text = "Start";
@@ -91,7 +222,7 @@ namespace GridGame
             MenuItem options = strip.MenuItems.Add("&Options");
             options.MenuItems.Add(new MenuItem("&Main Menu", stripMainMenuEvent_Click));
             options.MenuItems.Add(new MenuItem("&Toggle Music On/Off"));
-            options.MenuItems.Add(new MenuItem("&Exit"));
+            options.MenuItems.Add(new MenuItem("&Exit", stripMainMenuExitEvent_Click));
             this.Menu = strip;
             MenuItem rules = strip.MenuItems.Add("&Rules", btnRulesEvent_Click);
             this.Menu = strip;
@@ -101,7 +232,8 @@ namespace GridGame
         void btnGameStartEvent_Click(object sender, EventArgs e)
         {
             clearForm();
-            
+            // Loads the ship selection screen, prior to a game starting.
+            initShipSelect();
             // insert game code
             // currently all difficulties direct to this event
         }
@@ -129,6 +261,12 @@ namespace GridGame
         {
             clearForm();
             initMenu();
+        }
+
+        // Strip Main Menu Exit button, closes program.
+        void stripMainMenuExitEvent_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }
