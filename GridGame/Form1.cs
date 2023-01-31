@@ -162,9 +162,12 @@ namespace GridGame
         {
             //using button name to associate it with the x and y values of it in the players bool board
             String name = ((Button)sender).Name;
-            int p = (int)name[1];
-            int x = (int)name[2];
-            int y = (int)name[3];
+            char pVal = name[1];
+            char xVal = name[2];
+            char yVal = name[3];
+            int p = int.Parse(name[1].ToString());
+            int x = int.Parse(name[2].ToString());
+            int y = int.Parse(name[3].ToString());
 
             if (gameSettings.getAI() == false)
             {
@@ -181,8 +184,9 @@ namespace GridGame
                             ((Button)sender).BackColor = Color.Red;
                         else
                             ((Button)sender).BackColor = Color.White;
+
+                        gameSettings.setPlayer1Turn(false);
                     }
-                    gameSettings.setPlayer1Turn(false);
                 }
                 else
                 {
@@ -196,8 +200,9 @@ namespace GridGame
                             ((Button)sender).BackColor = Color.Red;
                         else
                             ((Button)sender).BackColor = Color.White;
+
+                        gameSettings.setPlayer1Turn(true);
                     }
-                    gameSettings.setPlayer1Turn(true);
                 }
             }
             else
@@ -214,8 +219,9 @@ namespace GridGame
                             ((Button)sender).BackColor = Color.Red;
                         else
                             ((Button)sender).BackColor = Color.White;
+
+                        gameSettings.setPlayer1Turn(true);
                     }
-                    gameSettings.setPlayer1Turn(false);
                 }
                 else
                 {
@@ -372,19 +378,14 @@ namespace GridGame
                 {
                     // Create all buttons on the grid.
                     BtnPlayer1Grid[x, y].SetBounds(344 - (31 * y), 101 + (31 * x), 25, 25);
-                    BtnPlayer1Grid[x, y].SetBounds(431 + (31 * y), 349 - (31 * x), 25, 25);
+                    BtnPlayer2Grid[x, y].SetBounds(431 + (31 * y), 349 - (31 * x), 25, 25);
 
+                    BtnPlayer1Grid[x, y].Click -= BtnPlayer1GridEvent_Click;
                     BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnTargetSelectionEvent_Click);
                     BtnPlayer2Grid[x, y].Click += new EventHandler(this.BtnTargetSelectionEvent_Click);
 
                     BtnPlayer1Grid[x, y].Name = "P1" + Convert.ToString(x) + Convert.ToString(y);
-                    BtnPlayer1Grid[x, y].Name = "P2" + Convert.ToString(x) + Convert.ToString(y);
-
-                    if (y == 1 && x == 0)
-                    {
-                        BtnPlayer1Grid[0, 1].BackColor = Color.Red;
-                        BtnPlayer2Grid[0, 1].BackColor = Color.Red;
-                    }
+                    BtnPlayer2Grid[x, y].Name = "P2" + Convert.ToString(x) + Convert.ToString(y);
 
                     Controls.Add(BtnPlayer1Grid[x, y]);
                     Controls.Add(BtnPlayer2Grid[x, y]);
