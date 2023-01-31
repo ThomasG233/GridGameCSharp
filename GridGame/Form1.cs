@@ -75,6 +75,7 @@ namespace GridGame
             }
         }
 
+        bool sound = true;
         Font menuFont = new Font("Times New Roman", 18.0f);
         /* Had to make the grids for the selection screen global variables, so that the necessary checks can be performed.
          * i.e. when you confirm your ship placements, isSelectionValid() must be called.
@@ -89,6 +90,7 @@ namespace GridGame
             InitializeComponent();
             menuStrip();
             initMenu();
+            soundButton(sound);
             
         }
 
@@ -339,6 +341,49 @@ namespace GridGame
             this.Controls.Clear();
             this.InitializeComponent();
             menuStrip();
+            soundButton(sound);
+        }
+
+        // sound button, responsible for toggling of in-game music/sounds
+        private void soundButton(bool sound)
+        {
+            Button btnSound = new Button();
+
+            Image soundImg = Image.FromFile("../../megaphone.png");
+            btnSound.BackgroundImage = soundImg;
+            btnSound.BackgroundImageLayout = ImageLayout.Stretch;
+            btnSound.SetBounds(25, 20, 50, 50);
+            btnSound.Click += new EventHandler(this.btnSoundEvent_Click);
+
+            btnSound.FlatStyle = FlatStyle.Flat;
+            btnSound.FlatAppearance.BorderSize = 1;
+            if (sound)
+            {
+                btnSound.FlatAppearance.BorderColor = Color.Blue;
+            }
+            else
+            {
+                btnSound.FlatAppearance.BorderColor = Color.Red;
+            }
+            
+            Controls.Add(btnSound);
+        }
+
+        // sound toggle click event
+        void btnSoundEvent_Click(object sender, EventArgs e)
+        {
+            if (!sound)
+            {
+                ((Button)sender).FlatAppearance.BorderColor = Color.Blue;
+                sound = true;
+                // toggle sound on
+            }
+            else if (sound)
+            {
+                ((Button)sender).FlatAppearance.BorderColor = Color.Red;
+                sound = false;
+                // toggle sound off
+            }
         }
 
         // Creates the main menu strip in the program
