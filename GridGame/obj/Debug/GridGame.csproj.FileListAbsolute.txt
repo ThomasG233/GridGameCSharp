@@ -39,4 +39,4 @@ C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer
 C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\bin\Debug\GridGame.exe.config
 C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\bin\Debug\GridGame.exe
 C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\bin\Debug\GridGame.pdb
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.GameSettings.resources
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.Form1.resources

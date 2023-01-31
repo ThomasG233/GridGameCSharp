@@ -12,72 +12,68 @@ using System.Xml;
 
 namespace GridGame
 {
-
-    /* have put this here as it may come in use later.
-     * idea was hold all needed variables for the gameplay.
-    */
-    class GameSettings
-    {
-        private int difficulty; 
-        private bool[,] board1 = new bool[9, 9];
-        private bool[,] board2 = new bool[9, 9];
-        private bool player1Turn = true;
-        private bool ai = false;
-
-        public void setDifficulty(int diff)
-        {
-            difficulty = diff;
-        }
-        public void setAI(bool AI)
-        {
-            ai = AI;
-        }
-        public void setBoard1(bool[,] board1)
-        {
-            this.board1= board1;
-        }
-        public void setBoard2(bool[,] board2)
-        {
-            this.board2 = board2;
-        }
-        public void setPlayer1Turn(bool turn)
-        {
-            player1Turn = turn;
-        }
-        public int getDifficulty()
-        {
-            return difficulty;
-        }
-        public bool getAI()
-        {
-            return ai;
-        }
-        public bool[,] getBoard1()
-        {
-            return board1;
-        }
-        public bool[,] getBoard2()
-        {
-            return board2;
-        }
-        public bool getPlayer1Turn()
-        {
-            return player1Turn;
-        }
-
-        public bool getBoard1CellState(int x, int y)
-        {
-            return board1[x, y];
-        }
-
-        public bool getBoard2CellState(int x, int y)
-        {
-            return board2[x, y];
-        }
-
-    }
     public partial class Form1 : Form
     {
+        /* have put this here as it may come in use later.
+        *  idea was hold all needed variables for the gameplay.
+        */
+        class GameSettings
+        {
+            private int difficulty;
+            private bool[,] board1 = new bool[9, 9];
+            private bool[,] board2 = new bool[9, 9];
+            private bool player1Turn = true;
+            private bool ai = false;
+
+            public void setDifficulty(int diff)
+            {
+                difficulty = diff;
+            }
+            public void setAI(bool AI)
+            {
+                ai = AI;
+            }
+            public void setBoard1(bool[,] board1)
+            {
+                this.board1 = board1;
+            }
+            public void setBoard2(bool[,] board2)
+            {
+                this.board2 = board2;
+            }
+            public void setPlayer1Turn(bool turn)
+            {
+                player1Turn = turn;
+            }
+            public int getDifficulty()
+            {
+                return difficulty;
+            }
+            public bool getAI()
+            {
+                return ai;
+            }
+            public bool[,] getBoard1()
+            {
+                return board1;
+            }
+            public bool[,] getBoard2()
+            {
+                return board2;
+            }
+            public bool getPlayer1Turn()
+            {
+                return player1Turn;
+            }
+            public bool getBoard1CellState(int x, int y)
+            {
+                return board1[x, y];
+            }
+            public bool getBoard2CellState(int x, int y)
+            {
+                return board2[x, y];
+            }
+        }
 
         Font menuFont = new Font("Times New Roman", 18.0f);
         /* Had to make the grids for the selection screen global variables, so that the necessary checks can be performed.
@@ -93,6 +89,7 @@ namespace GridGame
             InitializeComponent();
             menuStrip();
             initMenu();
+            
         }
 
         // needed to access code easily on opening the files
@@ -432,3 +429,4 @@ namespace GridGame
         }
     }
 }
+
