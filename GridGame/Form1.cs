@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 
 namespace GridGame
 {
@@ -21,6 +23,8 @@ namespace GridGame
             int difficulty;
             bool[,] board1 = new bool[9, 9];
             bool[,] board2 = new bool[9, 9];
+            bool player1Turn = true;
+            bool ai = false;
 
             void setDifficulty(int diff)
             {
@@ -54,7 +58,8 @@ namespace GridGame
         private void initShipSelect()
         {
             BtnPlayer1Grid = new Button[9, 9];
-    
+            BtnPlayer2Grid = new Button[9, 9];
+
             Button BtnConfirm = new Button();
             Label LblInstructions = new Label();
             // still need to add these to the side of the grid.
@@ -78,8 +83,10 @@ namespace GridGame
                 { 
                     // Create all buttons on the grid.
                     BtnPlayer1Grid[x, y] = new Button();
+                    BtnPlayer2Grid[x, y] = new Button();
                     BtnPlayer1Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.33333) + (40 * x), ((int)(this.ClientSize.Height / 9)) + (40 * y), 40, 40);
                     BtnPlayer1Grid[x, y].BackColor = Color.PowderBlue;
+                    BtnPlayer2Grid[x, y].BackColor = Color.PowderBlue;
 
                     BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnPlayer1GridEvent_Click);
 
@@ -105,6 +112,74 @@ namespace GridGame
                 ((Button)sender).BackColor = Color.PowderBlue;
             }
         }
+        //when the player picks a spot to target on the opponents side
+        //this will check if there is a ship there or not
+        void BtnTargetSelectionEvent_Click(object sender, EventArgs e)
+        {
+            //using button name to associate it with the x and y values of it in the players bool board
+            String name = ((Button)sender).Name;
+            int p = (int)name[1];
+            int x = (int)name[2];
+            int y = (int)name[3];
+
+            if (gameSettings.ai == false)
+            {
+                // Take turns targeting ships (player vs player)
+                if (gameSettings.player1Turn == true)
+                {
+                    if (p == 1)
+                    {
+                        MessageBox.Show("Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        if (gameSettings.board2[x, y] == true)
+                            ((Button)sender).BackColor = Color.Red;
+                        else
+                            ((Button)sender).BackColor = Color.White;
+                    }
+                    gameSettings.player1Turn = false;
+                }
+                else
+                {
+                    if (p == 2)
+                    {
+                        MessageBox.Show("Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        if (gameSettings.board1[x, y] == true)
+                            ((Button)sender).BackColor = Color.Red;
+                        else
+                            ((Button)sender).BackColor = Color.White;
+                    }
+                    gameSettings.player1Turn = true;
+                }
+            }
+            else
+            {
+                if (gameSettings.player1Turn == true)
+                {
+                    if (p == 1)
+                    {
+                        MessageBox.Show("Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        if (gameSettings.board2[x, y] == true)
+                            ((Button)sender).BackColor = Color.Red;
+                        else
+                            ((Button)sender).BackColor = Color.White;
+                    }
+                    gameSettings.player1Turn = false;
+                }
+                else
+                {
+                    // Write code for ai's turn depending on difficulty
+                }
+            }
+        }
+
         // Confirm the grid placements.
         void BtnConfirmEvent_Click(object sender, EventArgs e)
         {
@@ -122,9 +197,10 @@ namespace GridGame
                         }
                     }
                 }
-                clearForm();              
+                clearForm();
                 // Clear array so it's not taking up memory.
-                BtnPlayer1Grid = null;
+                //BtnPlayer1Grid = null;
+                playGame();
             }
             else
             {
@@ -236,6 +312,40 @@ namespace GridGame
             initShipSelect();
             // insert game code
             // currently all difficulties direct to this event
+
+        }
+
+        void playGame()
+        {
+            // Check if it is in player vs player mode or player vs AI mode
+
+            // layout buttons for the game
+
+            for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
+            {
+
+                for (int y = 0; y < BtnPlayer1Grid.GetLength(1); y++)
+                {
+                    // Create all buttons on the grid.
+                    BtnPlayer1Grid[x, y].SetBounds(344 - (31 * y), 101 + (31 * x), 25, 25);
+                    BtnPlayer1Grid[x, y].SetBounds(431 + (31 * y), 349 - (31 * x), 25, 25);
+
+                    BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnTargetSelectionEvent_Click);
+                    BtnPlayer2Grid[x, y].Click += new EventHandler(this.BtnTargetSelectionEvent_Click);
+
+                    BtnPlayer1Grid[x, y].Name = "P1" + Convert.ToString(x) + Convert.ToString(y);
+                    BtnPlayer1Grid[x, y].Name = "P2" + Convert.ToString(x) + Convert.ToString(y);
+
+                    if (y == 1 && x == 0)
+                    {
+                        BtnPlayer1Grid[0, 1].BackColor = Color.Red;
+                        BtnPlayer2Grid[0, 1].BackColor = Color.Red;
+                    }
+
+                    Controls.Add(BtnPlayer1Grid[x, y]);
+                    Controls.Add(BtnPlayer2Grid[x, y]);
+                }
+            }
         }
 
         // Start button click event, leads directly to difficulty menu
@@ -267,6 +377,11 @@ namespace GridGame
         void stripMainMenuExitEvent_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        void CheckWin()
+        {
+
         }
     }
 }
