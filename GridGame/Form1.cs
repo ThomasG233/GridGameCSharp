@@ -422,8 +422,8 @@ namespace GridGame
                 for (int y = 0; y < BtnPlayer1Grid.GetLength(1); y++)
                 {
                     // Create all buttons on the grid.
-                    BtnPlayer1Grid[x, y].SetBounds(344 - (31 * y), 101 + (31 * x), 25, 25);
-                    BtnPlayer2Grid[x, y].SetBounds(431 + (31 * y), 349 - (31 * x), 25, 25);
+                    BtnPlayer1Grid[x, y].SetBounds(((this.ClientSize.Width / 2) - 50) - (31 * y), 101 + (31 * x), 25, 25);
+                    BtnPlayer2Grid[x, y].SetBounds(((this.ClientSize.Width / 2) + 50) + (31 * y), 349 - (31 * x), 25, 25);
 
                     BtnPlayer1Grid[x, y].Click -= BtnPlayer1GridEvent_Click;
                     BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnTargetSelectionEvent_Click);

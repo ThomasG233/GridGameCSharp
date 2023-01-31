@@ -9,3 +9,14 @@ C:\Users\kaste\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.Ge
 C:\Users\kaste\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
 C:\Users\kaste\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.exe
 C:\Users\kaste\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.pdb
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\bin\Debug\GridGame.exe.config
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\bin\Debug\GridGame.exe
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\bin\Debug\GridGame.pdb
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.AssemblyReference.cache
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.SuggestedBindingRedirects.cache
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.Form1.resources
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.Properties.Resources.resources
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.GenerateResource.cache
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.exe
+C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.pdb
