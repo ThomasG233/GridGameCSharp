@@ -16,21 +16,68 @@ namespace GridGame
     /* have put this here as it may come in use later.
      * idea was hold all needed variables for the gameplay.
     */
+    class GameSettings
+    {
+        private int difficulty; 
+        private bool[,] board1 = new bool[9, 9];
+        private bool[,] board2 = new bool[9, 9];
+        private bool player1Turn = true;
+        private bool ai = false;
+
+        public void setDifficulty(int diff)
+        {
+            difficulty = diff;
+        }
+        public void setAI(bool AI)
+        {
+            ai = AI;
+        }
+        public void setBoard1(bool[,] board1)
+        {
+            this.board1= board1;
+        }
+        public void setBoard2(bool[,] board2)
+        {
+            this.board2 = board2;
+        }
+        public void setPlayer1Turn(bool turn)
+        {
+            player1Turn = turn;
+        }
+        public int getDifficulty()
+        {
+            return difficulty;
+        }
+        public bool getAI()
+        {
+            return ai;
+        }
+        public bool[,] getBoard1()
+        {
+            return board1;
+        }
+        public bool[,] getBoard2()
+        {
+            return board2;
+        }
+        public bool getPlayer1Turn()
+        {
+            return player1Turn;
+        }
+
+        public bool getBoard1CellState(int x, int y)
+        {
+            return board1[x, y];
+        }
+
+        public bool getBoard2CellState(int x, int y)
+        {
+            return board2[x, y];
+        }
+
+    }
     public partial class Form1 : Form
     {
-        class GameSettings
-        {
-            int difficulty;
-            bool[,] board1 = new bool[9, 9];
-            bool[,] board2 = new bool[9, 9];
-            bool player1Turn = true;
-            bool ai = false;
-
-            void setDifficulty(int diff)
-            {
-                difficulty = diff;
-            }
-        }
 
         Font menuFont = new Font("Times New Roman", 18.0f);
         /* Had to make the grids for the selection screen global variables, so that the necessary checks can be performed.
@@ -122,10 +169,10 @@ namespace GridGame
             int x = (int)name[2];
             int y = (int)name[3];
 
-            if (gameSettings.ai == false)
+            if (gameSettings.getAI() == false)
             {
                 // Take turns targeting ships (player vs player)
-                if (gameSettings.player1Turn == true)
+                if (gameSettings.getPlayer1Turn() == true)
                 {
                     if (p == 1)
                     {
@@ -133,12 +180,12 @@ namespace GridGame
                     }
                     else
                     {
-                        if (gameSettings.board2[x, y] == true)
+                        if (gameSettings.getBoard2CellState(x,y) == true)
                             ((Button)sender).BackColor = Color.Red;
                         else
                             ((Button)sender).BackColor = Color.White;
                     }
-                    gameSettings.player1Turn = false;
+                    gameSettings.setPlayer1Turn(false);
                 }
                 else
                 {
@@ -148,17 +195,17 @@ namespace GridGame
                     }
                     else
                     {
-                        if (gameSettings.board1[x, y] == true)
+                        if (gameSettings.getBoard1CellState(x,y) == true)
                             ((Button)sender).BackColor = Color.Red;
                         else
                             ((Button)sender).BackColor = Color.White;
                     }
-                    gameSettings.player1Turn = true;
+                    gameSettings.setPlayer1Turn(true);
                 }
             }
             else
             {
-                if (gameSettings.player1Turn == true)
+                if (gameSettings.getPlayer1Turn() == true)
                 {
                     if (p == 1)
                     {
@@ -166,12 +213,12 @@ namespace GridGame
                     }
                     else
                     {
-                        if (gameSettings.board2[x, y] == true)
+                        if (gameSettings.getBoard2CellState(x, y) == true)
                             ((Button)sender).BackColor = Color.Red;
                         else
                             ((Button)sender).BackColor = Color.White;
                     }
-                    gameSettings.player1Turn = false;
+                    gameSettings.setPlayer1Turn(false);
                 }
                 else
                 {

@@ -18,7 +18,6 @@ C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\D
 C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
 C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.exe
 C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.pdb
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.Form1.resources
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\bin\Debug\GridGame.exe.config
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\bin\Debug\GridGame.exe
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\bin\Debug\GridGame.pdb
@@ -30,3 +29,14 @@ C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.Ge
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.exe
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.pdb
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.csproj.AssemblyReference.cache
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.Properties.Resources.resources
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.csproj.GenerateResource.cache
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.exe
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.pdb
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.GameSettings.resources
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\bin\Debug\GridGame.exe.config
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\bin\Debug\GridGame.exe
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\bin\Debug\GridGame.pdb
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.GameSettings.resources
