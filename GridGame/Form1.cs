@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,6 +25,7 @@ namespace GridGame
             private bool[,] board2 = new bool[9, 9];
             private bool player1Turn = true;
             private bool ai = false;
+            private int score1 = 0, score2 = 0;
 
             public void setDifficulty(int diff)
             {
@@ -44,6 +46,16 @@ namespace GridGame
             public void setPlayer1Turn(bool turn)
             {
                 player1Turn = turn;
+            }
+
+            public void setScore1(int score)
+            {
+                score1 = score;
+            }
+
+            public void setScore2(int score)
+            {
+                score2 = score;
             }
             public int getDifficulty()
             {
@@ -73,8 +85,21 @@ namespace GridGame
             {
                 return board2[x, y];
             }
+
+            public int getScore1()
+            {
+                return score1;
+            }
+
+            public int getScore2()
+            {
+                return score2;
+            }
         }
 
+        Label lblPlayerTurn = new Label();
+        Label lblScore1 = new Label();
+        Label lblScore2 = new Label();
         bool sound = true;
         Font menuFont = new Font("Times New Roman", 18.0f);
         /* Had to make the grids for the selection screen global variables, so that the necessary checks can be performed.
@@ -182,12 +207,17 @@ namespace GridGame
                     }
                     else
                     {
-                        if (gameSettings.getBoard2CellState(x,y) == true)
+                        if (gameSettings.getBoard2CellState(x, y) == true)
+                        {
                             ((Button)sender).BackColor = Color.Red;
+                            gameSettings.setScore1(gameSettings.getScore1() + 1);
+                            lblScore1.Text = Convert.ToString(gameSettings.getScore1());
+                        }
                         else
                             ((Button)sender).BackColor = Color.White;
 
                         gameSettings.setPlayer1Turn(false);
+                        lblPlayerTurn.Text = "Player 2's Turn";
                     }
                 }
                 else
@@ -199,11 +229,16 @@ namespace GridGame
                     else
                     {
                         if (gameSettings.getBoard1CellState(x,y) == true)
+                        {
                             ((Button)sender).BackColor = Color.Red;
+                            gameSettings.setScore2(gameSettings.getScore2() + 1);
+                            lblScore2.Text = Convert.ToString(gameSettings.getScore2());
+                        }
                         else
                             ((Button)sender).BackColor = Color.White;
 
                         gameSettings.setPlayer1Turn(true);
+                        lblPlayerTurn.Text = "Player 1's Turn";
                     }
                 }
             }
@@ -432,8 +467,38 @@ namespace GridGame
                     BtnPlayer1Grid[x, y].Name = "P1" + Convert.ToString(x) + Convert.ToString(y);
                     BtnPlayer2Grid[x, y].Name = "P2" + Convert.ToString(x) + Convert.ToString(y);
 
+                    lblScore1.SetBounds(((this.ClientSize.Width / 2) - 49), 50, 25, 25);
+                    lblScore2.SetBounds(((this.ClientSize.Width / 2) + 50), 50, 25, 25);
+                    lblScore1.ForeColor = Color.Blue;
+                    lblScore2.ForeColor = Color.Red;
+                    lblScore1.Font = menuFont;
+                    lblScore2.Font = menuFont;
+                    lblScore1.Text = Convert.ToString(gameSettings.getScore1());
+                    lblScore2.Text = Convert.ToString(gameSettings.getScore2());
+
+                    lblPlayerTurn.SetBounds((this.ClientSize.Width / 2) - 67, 400, 250, 25);
+                    lblPlayerTurn.Font = menuFont;
+                    lblPlayerTurn.Text = "Player 1's Turn";
+
+                    Label lblP1 = new Label();
+                    Label lblP2 = new Label();
+
+                    lblP1.SetBounds(((this.ClientSize.Width / 2) - 100), (this.ClientSize.Height / 2) - 223, 50, 25);
+                    lblP2.SetBounds(((this.ClientSize.Width / 2) + 94), (this.ClientSize.Height / 2) - 223, 50, 25);
+                    lblP1.Font = menuFont;
+                    lblP2.Font = menuFont;
+                    lblP1.Text = "P1";
+                    lblP2.Text = "P2";
+                    lblP1.ForeColor = Color.Blue;
+                    lblP2.ForeColor = Color.Red;
+
                     Controls.Add(BtnPlayer1Grid[x, y]);
                     Controls.Add(BtnPlayer2Grid[x, y]);
+                    Controls.Add(lblScore1);
+                    Controls.Add(lblScore2);
+                    Controls.Add(lblPlayerTurn);
+                    Controls.Add(lblP1);
+                    Controls.Add(lblP2);
                 }
             }
         }
