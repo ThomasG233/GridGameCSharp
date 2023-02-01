@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
+using System.Media;
 
 namespace GridGame
 {
@@ -127,7 +128,10 @@ namespace GridGame
         Label lblPlayerTurn = new Label();
         Label lblScore1 = new Label();
         Label lblScore2 = new Label();
+        //sound and music control lines of code
         bool sound = true;
+        SoundPlayer explosion = new SoundPlayer(@"../../explosion.wav");
+        SoundPlayer music = new SoundPlayer(@"../../waves.wav");
         Font menuFont = new Font("Times New Roman", 18.0f);
         /* Had to make the grids for the selection screen global variables, so that the necessary checks can be performed.
          * i.e. when you confirm your ship placements, isSelectionValid() must be called.
@@ -229,38 +233,38 @@ namespace GridGame
         {
             //using button name to associate it with the x and y values of it in the players bool board
             String name = ((Button)sender).Name;
-            char pVal = name[1];
-            char xVal = name[2];
-            char yVal = name[3];
+            //char pVal = name[1];
+            //char xVal = name[2];
+            //char yVal = name[3];
             int p = int.Parse(name[1].ToString());
             int x = int.Parse(name[2].ToString());
             int y = int.Parse(name[3].ToString());
 
-            if (gameSettings.getAI() == false)
+            if (gameSettings.getPlayer1Turn() == true)
             {
-                // Take turns targeting ships (player vs player)
-                if (gameSettings.getPlayer1Turn() == true)
+                if (p == 1)
                 {
-                    if (p == 1)
-                    {
-                        MessageBox.Show("Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        if (gameSettings.getBoard2CellState(x, y) == true)
-                        {
-                            ((Button)sender).BackColor = Color.Red;
-                            gameSettings.setScore1(gameSettings.getScore1() + 1);
-                            lblScore1.Text = Convert.ToString(gameSettings.getScore1());
-                        }
-                        else
-                            ((Button)sender).BackColor = Color.White;
-
-                        gameSettings.setPlayer1Turn(false);
-                        lblPlayerTurn.Text = "Player 2's Turn";
-                    }
+                    MessageBox.Show("Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
+                {
+                    if (gameSettings.getBoard2CellState(x, y) == true)
+                    {
+                        ((Button)sender).BackColor = Color.Red;
+                        gameSettings.setScore1(gameSettings.getScore1() + 1);
+                        lblScore1.Text = Convert.ToString(gameSettings.getScore1());
+                        playSound();
+                    }
+                    else
+                        ((Button)sender).BackColor = Color.White;
+
+                    gameSettings.setPlayer1Turn(false);
+                    lblPlayerTurn.Text = "Player 2's Turn";
+                }
+            }
+            else
+            {
+                if(gameSettings.getAI() == false)
                 {
                     if (p == 2)
                     {
@@ -268,11 +272,12 @@ namespace GridGame
                     }
                     else
                     {
-                        if (gameSettings.getBoard1CellState(x,y) == true)
+                        if (gameSettings.getBoard1CellState(x, y) == true)
                         {
                             ((Button)sender).BackColor = Color.Red;
                             gameSettings.setScore2(gameSettings.getScore2() + 1);
                             lblScore2.Text = Convert.ToString(gameSettings.getScore2());
+                            playSound();
                         }
                         else
                             ((Button)sender).BackColor = Color.White;
@@ -281,28 +286,9 @@ namespace GridGame
                         lblPlayerTurn.Text = "Player 1's Turn";
                     }
                 }
-            }
-            else
-            {
-                if (gameSettings.getPlayer1Turn() == true)
-                {
-                    if (p == 1)
-                    {
-                        MessageBox.Show("Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        if (gameSettings.getBoard2CellState(x, y) == true)
-                            ((Button)sender).BackColor = Color.Red;
-                        else
-                            ((Button)sender).BackColor = Color.White;
-
-                        gameSettings.setPlayer1Turn(true);
-                    }
-                }
                 else
                 {
-                    // Write code for ai's turn depending on difficulty
+                    // code for ai selection of bomb
                 }
             }
         }
@@ -565,6 +551,7 @@ namespace GridGame
             if (sound)
             {
                 btnSound.FlatAppearance.BorderColor = Color.Blue;
+                music.Play();
             }
             else
             {
@@ -581,12 +568,14 @@ namespace GridGame
             {
                 ((Button)sender).FlatAppearance.BorderColor = Color.Blue;
                 sound = true;
+                music.Play();
                 // toggle sound on
             }
             else if (sound)
             {
                 ((Button)sender).FlatAppearance.BorderColor = Color.Red;
                 sound = false;
+                music.Stop();
                 // toggle sound off
             }
         }
@@ -707,6 +696,12 @@ namespace GridGame
         void CheckWin()
         {
 
+        }
+
+        void playSound()
+        {
+            if(sound == true)
+                explosion.Play();
         }
     }
 }
