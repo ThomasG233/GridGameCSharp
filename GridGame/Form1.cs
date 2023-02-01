@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using System.Media;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 
 namespace GridGame
 {
@@ -240,6 +241,10 @@ namespace GridGame
             int x = int.Parse(name[2].ToString());
             int y = int.Parse(name[3].ToString());
 
+            // for playMusic to ensure explosion and music does not interrupt each other
+            Timer musicTimer = new Timer();
+            musicTimer.Interval = 1250;
+
             if (gameSettings.getPlayer1Turn() == true)
             {
                 if (p == 1)
@@ -253,6 +258,9 @@ namespace GridGame
                         ((Button)sender).BackColor = Color.Red;
                         gameSettings.setScore1(gameSettings.getScore1() + 1);
                         lblScore1.Text = Convert.ToString(gameSettings.getScore1());
+                        playMusic(false);
+                        musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
+                        musicTimer.Start();
                         playSound();
                     }
                     else
@@ -277,6 +285,9 @@ namespace GridGame
                             ((Button)sender).BackColor = Color.Red;
                             gameSettings.setScore2(gameSettings.getScore2() + 1);
                             lblScore2.Text = Convert.ToString(gameSettings.getScore2());
+                            playMusic(false);
+                            musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
+                            musicTimer.Start();
                             playSound();
                         }
                         else
@@ -518,28 +529,58 @@ namespace GridGame
             btns[1].Text = "Normal";
             btns[2].Text = "Hard";
 
+            Button btnPlayerVsPlayer = new Button();
+            btnPlayerVsPlayer.Font = menuFont;
+            btnPlayerVsPlayer.SetBounds(this.ClientSize.Width / 2 - 112, this.ClientSize.Height / 2 + 25, 200, 50);
+            btnPlayerVsPlayer.Text = "Player vs Player";
+
             for (int i = 0; i < btns.Length; i++)
             {
                 btns[i].Click += new EventHandler(this.btnGameStartEvent_Click); // after clicking difficulty, set game
                 Controls.Add(btns[i]);
             }
+
+            btnPlayerVsPlayer.Click += new EventHandler(this.btnGameStartEvent_Click);
+            Controls.Add(btnPlayerVsPlayer);
         }
 
         // Clears the form and re-initialises with the menu strip intact
         // (Clearance of form allows for switches between main menu to game screen)
         private void clearForm()
         {
-            this.Controls.Clear();
-            this.InitializeComponent();
-            menuStrip();
-            soundButton(sound);
+            //this.Controls.Clear();
+            foreach (var btn in Controls.OfType<Button>().ToList())
+            {
+                if (btn.Name == "btnSound")
+                {
+                    continue;
+                }
+                
+                Controls.Remove(btn);
+            }
+            foreach (var lbl in Controls.OfType<Label>().ToList())
+            {
+                Controls.Remove(lbl);
+            }
+            foreach (var tBox in Controls.OfType<TextBox>().ToList())
+            {
+                Controls.Remove(tBox);
+            }
+            foreach (var image in Controls.OfType<PictureBox>().ToList())
+            {
+                Controls.Remove(image);
+            }
+
+            //this.InitializeComponent();
+            //menuStrip();
+            //soundButton(sound);
         }
 
         // sound button, responsible for toggling of in-game music/sounds
         private void soundButton(bool sound)
         {
             Button btnSound = new Button();
-
+            btnSound.Name = "btnSound";
             Image soundImg = Image.FromFile("../../megaphone.png");
             btnSound.BackgroundImage = soundImg;
             btnSound.BackgroundImageLayout = ImageLayout.Stretch;
@@ -702,6 +743,18 @@ namespace GridGame
         {
             if(sound == true)
                 explosion.Play();
+        }
+
+        void playMusic(bool play)
+        {
+            if (sound && play)
+                music.Play();
+        }
+
+        void playMusicEvent_Timer(object sender, EventArgs e)
+        {
+            ((Timer)sender).Stop();
+            playMusic(true);
         }
     }
 }
