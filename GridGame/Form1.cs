@@ -338,7 +338,11 @@ namespace GridGame
             {
                 if (p == 1)
                 {
-                    MessageBox.Show("Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("You Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                else if(((Button)sender).BackColor == Color.Red)
+                {
+                    MessageBox.Show("You Can't Target A Spot You've Already Targeted", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {
@@ -355,6 +359,7 @@ namespace GridGame
                     else
                         ((Button)sender).BackColor = Color.White;
 
+                    CheckWin();
                     gameSettings.setPlayer1Turn(false);
                     lblPlayerTurn.Text = "Player 2's Turn";
                 }
@@ -365,7 +370,11 @@ namespace GridGame
                 {
                     if (p == 2)
                     {
-                        MessageBox.Show("Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("You Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else if (((Button)sender).BackColor == Color.Red || ((Button)sender).BackColor == Color.White)
+                    {
+                        MessageBox.Show("You Can't Target A Spot You've Already Targeted", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     else
                     {
@@ -382,6 +391,7 @@ namespace GridGame
                         else
                             ((Button)sender).BackColor = Color.White;
 
+                        CheckWin();
                         gameSettings.setPlayer1Turn(true);
                         lblPlayerTurn.Text = "Player 1's Turn";
                     }
@@ -389,6 +399,7 @@ namespace GridGame
                 else
                 {
                     // code for ai selection of bomb
+                    // CheckWin();
                 }
             }
         }
@@ -785,6 +796,7 @@ namespace GridGame
             difficultyMenu();
         }
 
+        //Rules for the game displayed by 3 message boxes back-to-back-to-back
         void btnRulesEvent_Click(object sender, EventArgs e)
         {
             string msg1 = "The object of Battleship is to try and sink all of the other player's before they sink all of your ships. All of the other player's ships are somewhere on his/her board.  You try and hit them by clicking one of the squares on the board.  The other player will also try to hit your ships in turns.  Neither you nor the other player can see the other's board so you must try to guess where they are.";
@@ -809,23 +821,80 @@ namespace GridGame
             Close();
         }
 
+        //checks to see if either player has destroyed all 5 ships then runs endgame()
         void CheckWin()
         {
-
+            if(lblScore1.Text == Convert.ToString(17) || lblScore2.Text == Convert.ToString(17))
+            {
+                System.Threading.Thread.Sleep(1000);
+                endgame();
+            }
         }
 
+        // Is ran when someone has won the game and heads over to the new endgame screen which shows the user(s) who won and allows them to either play again or go back to menu
+        void endgame()
+        {
+            Label lblWinner = new Label();
+            Button btnPlayAgain = new Button();
+            Button btnMainMenu = new Button();
+            Font titleFont = new Font("Times New Roman", 40.0f);
+
+            btnPlayAgain.Text = "Play Again";
+            btnMainMenu.Text = "Main Menu";
+
+            lblWinner.SetBounds(((int)ClientSize.Width / 2) - 180, 100, 400, 100);
+            btnPlayAgain.SetBounds(this.ClientSize.Width / 2 - 112, this.ClientSize.Height / 2, 200, 50);
+            btnMainMenu.SetBounds(this.ClientSize.Width / 2 - 112, this.ClientSize.Height / 2 + 75, 200, 50);
+
+            btnPlayAgain.Click += new EventHandler(this.btnPlayAgain_Click);
+            btnMainMenu.Click += new EventHandler(this.btnRunMenu_Click);
+
+            lblWinner.Font = titleFont;
+            btnPlayAgain.Font = menuFont;
+            btnMainMenu.Font = menuFont;
+
+            if (lblScore1.Text == Convert.ToString(17))
+                lblWinner.Text = "Player 1 Wins!";
+
+            else
+                lblWinner.Text = "Player 2 Wins!";
+
+            clearForm();
+
+            Controls.Add(lblWinner);
+            Controls.Add(btnPlayAgain);
+            Controls.Add(btnMainMenu);
+        }
+
+        //function to run the menu function cause that function isnt an button event function so cant be called directly
+        void btnRunMenu_Click(object sender , EventArgs e)
+        {
+            clearForm();
+            initMenu();
+        }
+
+        //function to run the difficulty menu function cause that function isnt an button event function so cant be called directly
+        void btnPlayAgain_Click(object sender, EventArgs e)
+        {
+            clearForm();
+            difficultyMenu();
+        }
+
+        //plays explosion sound when ship is hit
         void playSound()
         {
             if(sound == true)
                 explosion.Play();
         }
 
+        //plays background music
         void playMusic(bool play)
         {
             if (sound && play)
                 music.Play();
         }
 
+        //timer to reduce weird sound glitch with explosion
         void playMusicEvent_Timer(object sender, EventArgs e)
         {
             ((Timer)sender).Stop();
