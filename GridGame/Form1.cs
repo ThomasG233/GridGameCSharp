@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Media;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace GridGame
 {
@@ -59,6 +60,7 @@ namespace GridGame
             {
                 score2 = score;
             }
+
             public int getDifficulty()
             {
                 return difficulty;
@@ -127,8 +129,8 @@ namespace GridGame
         }
 
         Label lblPlayerTurn = new Label();
-        Label lblScore1 = new Label();
-        Label lblScore2 = new Label();
+        TextBox scoreP1 = new TextBox();
+        TextBox scoreP2 = new TextBox();
         //sound and music control lines of code
         bool sound = true;
         SoundPlayer explosion = new SoundPlayer(@"../../explosion.wav");
@@ -142,6 +144,12 @@ namespace GridGame
         Button[,] BtnPlayer1Grid;
         Button[,] BtnPlayer2Grid;
         GameSettings gameSettings = new GameSettings();
+
+        int count = 0;
+        Label lblTimer = new Label();
+        Timer t = new Timer();
+        //TimeSpan tSpan = new TimeSpan();
+
         public Form1()
         {
             InitializeComponent();
@@ -340,7 +348,7 @@ namespace GridGame
                 {
                     MessageBox.Show("You Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
-                else if(((Button)sender).BackColor == Color.Red)
+                else if (((Button)sender).BackColor == Color.Red || ((Button)sender).BackColor == Color.White)
                 {
                     MessageBox.Show("You Can't Target A Spot You've Already Targeted", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -350,7 +358,7 @@ namespace GridGame
                     {
                         ((Button)sender).BackColor = Color.Red;
                         gameSettings.setScore1(gameSettings.getScore1() + 1);
-                        lblScore1.Text = Convert.ToString(gameSettings.getScore1());
+                        scoreP1.Text = Convert.ToString(gameSettings.getScore1());
                         playMusic(false);
                         musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
                         musicTimer.Start();
@@ -382,7 +390,7 @@ namespace GridGame
                         {
                             ((Button)sender).BackColor = Color.Red;
                             gameSettings.setScore2(gameSettings.getScore2() + 1);
-                            lblScore2.Text = Convert.ToString(gameSettings.getScore2());
+                            scoreP2.Text = Convert.ToString(gameSettings.getScore2());
                             playMusic(false);
                             musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
                             musicTimer.Start();
@@ -427,6 +435,7 @@ namespace GridGame
             {
                 for (int y = 0; y < BtnPlayer1Grid.GetLength(0); y++)
                 {
+                    Debug.WriteLine(Convert.ToString(x) + " " + Convert.ToString(y) + ": " +  BtnPlayer1Grid[x, y].BackColor);
                     if (BtnPlayer1Grid[x, y].BackColor == Color.Gray)
                     {
                         numberOfShipGrids++;
@@ -667,8 +676,8 @@ namespace GridGame
         {
             Button btnSound = new Button();
             btnSound.Name = "btnSound";
-            Image soundImg = Image.FromFile("../../megaphone.png");
-            btnSound.BackgroundImage = soundImg;
+            Image soundImg = Image.FromFile("../../megaphone.png"); //loading from specific file location
+            btnSound.BackgroundImage = soundImg; //image for button
             btnSound.BackgroundImageLayout = ImageLayout.Stretch;
             btnSound.SetBounds(25, 20, 50, 50);
             btnSound.Click += new EventHandler(this.btnSoundEvent_Click);
@@ -678,7 +687,7 @@ namespace GridGame
             if (sound)
             {
                 btnSound.FlatAppearance.BorderColor = Color.Blue;
-                music.Play();
+                music.Play(); //plays music ONLY if button state is true
             }
             else
             {
@@ -725,9 +734,28 @@ namespace GridGame
         {
             clearForm();
             // Loads the ship selection screen, prior to a game starting.
-            initShipSelect();
-            // insert game code
-            // currently all difficulties direct to this event
+
+            // difficulty code handling
+            if (((Button)sender).Text == "Easy")
+            {
+                gameSettings.setDifficulty(0);
+                initShipSelect();
+            }
+            else if (((Button)sender).Text == "Normal")
+            {
+                gameSettings.setDifficulty(1);
+                initShipSelect();
+            }
+            else if (((Button)sender).Text == "Hard")
+            {
+                gameSettings.setDifficulty(2);
+                initShipSelect();
+            }
+            else
+            {
+                gameSettings.setDifficulty(3);
+                initShipSelect();
+            }
 
         }
 
@@ -753,24 +781,31 @@ namespace GridGame
                     BtnPlayer1Grid[x, y].Name = "P1" + Convert.ToString(x) + Convert.ToString(y);
                     BtnPlayer2Grid[x, y].Name = "P2" + Convert.ToString(x) + Convert.ToString(y);
 
-                    lblScore1.SetBounds(((this.ClientSize.Width / 2) - 49), 50, 25, 25);
-                    lblScore2.SetBounds(((this.ClientSize.Width / 2) + 50), 50, 25, 25);
-                    lblScore1.ForeColor = Color.Blue;
-                    lblScore2.ForeColor = Color.Red;
-                    lblScore1.Font = menuFont;
-                    lblScore2.Font = menuFont;
-                    lblScore1.Text = Convert.ToString(gameSettings.getScore1());
-                    lblScore2.Text = Convert.ToString(gameSettings.getScore2());
+                    // labels for scoring and turn identification
+                    scoreP1.SetBounds(((this.ClientSize.Width / 2) - 49), 50, 27, 25);
+                    scoreP2.SetBounds(((this.ClientSize.Width / 2) + 50), 50, 27, 25);
+                    scoreP1.ForeColor = Color.Blue;
+                    scoreP2.ForeColor = Color.Red;
+                    scoreP1.Font = menuFont;
+                    scoreP2.Font = menuFont;
+                    scoreP1.Text = Convert.ToString(gameSettings.getScore1());
+                    scoreP2.Text = Convert.ToString(gameSettings.getScore2());
+                    scoreP1.ReadOnly = true;
+                    scoreP2.ReadOnly = true;
+                    scoreP1.BorderStyle = BorderStyle.None;
+                    scoreP2.BorderStyle = BorderStyle.None;
+                    scoreP1.BackColor = this.BackColor;
+                    scoreP2.BackColor = this.BackColor;
 
                     lblPlayerTurn.SetBounds((this.ClientSize.Width / 2) - 67, 400, 250, 25);
                     lblPlayerTurn.Font = menuFont;
                     lblPlayerTurn.Text = "Player 1's Turn";
 
+                    // labels for each player's board identification
                     Label lblP1 = new Label();
                     Label lblP2 = new Label();
-
                     lblP1.SetBounds(((this.ClientSize.Width / 2) - 100), (this.ClientSize.Height / 2) - 223, 50, 25);
-                    lblP2.SetBounds(((this.ClientSize.Width / 2) + 94), (this.ClientSize.Height / 2) - 223, 50, 25);
+                    lblP2.SetBounds(((this.ClientSize.Width / 2) + 92), (this.ClientSize.Height / 2) - 223, 50, 25);
                     lblP1.Font = menuFont;
                     lblP2.Font = menuFont;
                     lblP1.Text = "P1";
@@ -780,13 +815,73 @@ namespace GridGame
 
                     Controls.Add(BtnPlayer1Grid[x, y]);
                     Controls.Add(BtnPlayer2Grid[x, y]);
-                    Controls.Add(lblScore1);
-                    Controls.Add(lblScore2);
+                    Controls.Add(scoreP1);
+                    Controls.Add(scoreP2);
                     Controls.Add(lblPlayerTurn);
                     Controls.Add(lblP1);
                     Controls.Add(lblP2);
+
+                    // timer code
+                    lblTimer.Font = menuFont;
+                    lblTimer.Text = "0";
+                    lblTimer.SetBounds(((this.ClientSize.Width / 2) - 5), (this.ClientSize.Height / 2) - 223, 500, 25);
+                    Controls.Add(lblTimer);
+
+                    //t.Enabled = true;
+                    t.Tick += new EventHandler(tickEvent);
+                    t.Interval = 1000;
+                    t.Enabled = true;
+                    t.Start();
                 }
             }
+        }
+
+        void tickEvent(object sender, EventArgs e)
+        {
+            t.Stop();
+            t.Enabled = false;
+            count++;
+            lblTimer.Text = Convert.ToString(count);
+
+            // game timer (20s hard, 30s normal, 40s easy)
+            // difficulty 0 = easy, 1 = normal, 2 = normal, 3 = player vs player
+            if (gameSettings.getDifficulty() == 0)
+            {
+                if (lblTimer.Text == "40")
+                    gameTimerEvent();
+            }
+            else if (gameSettings.getDifficulty() == 1)
+            {
+                if (lblTimer.Text == "30")
+                    gameTimerEvent();
+            }
+            else if (gameSettings.getDifficulty() == 2)
+            {
+                if (lblTimer.Text == "20")
+                    gameTimerEvent();
+            }
+            else if (gameSettings.getDifficulty() == 3)
+            {
+                if (lblTimer.Text == "30")
+                    gameTimerEvent();
+            }
+
+            t.Enabled = true;
+            t.Start();
+        }
+
+        void gameTimerEvent()
+        {
+            //MessageBox.Show("Timer exceeded! Moving to opponent's turn.", "Timer");
+            count = 0;
+            //if (gameSettings.getPlayer1Turn())
+            //{
+            //    gameSettings.setPlayer1Turn(false);
+            //}
+            //else
+            //{
+            //    gameSettings.setPlayer1Turn(true);
+            //}
         }
 
         // Start button click event, leads directly to difficulty menu
@@ -824,7 +919,7 @@ namespace GridGame
         //checks to see if either player has destroyed all 5 ships then runs endgame()
         void CheckWin()
         {
-            if(lblScore1.Text == Convert.ToString(17) || lblScore2.Text == Convert.ToString(17))
+            if(scoreP1.Text == Convert.ToString(17) || scoreP2.Text == Convert.ToString(17))
             {
                 System.Threading.Thread.Sleep(1000);
                 endgame();
@@ -853,7 +948,7 @@ namespace GridGame
             btnPlayAgain.Font = menuFont;
             btnMainMenu.Font = menuFont;
 
-            if (lblScore1.Text == Convert.ToString(17))
+            if (scoreP1.Text == Convert.ToString(17))
                 lblWinner.Text = "Player 1 Wins!";
 
             else
