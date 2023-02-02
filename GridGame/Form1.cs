@@ -148,7 +148,6 @@ namespace GridGame
             menuStrip();
             initMenu();
             soundButton(sound);
-            
         }
 
         // needed to access code easily on opening the files
@@ -200,6 +199,7 @@ namespace GridGame
                     // Create all buttons on the grid.
                     BtnPlayer1Grid[x, y] = new Button();
                     BtnPlayer2Grid[x, y] = new Button();
+
                     BtnPlayer1Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.33333) + (40 * x), ((int)(this.ClientSize.Height / 9)) + (40 * y), 40, 40);
                     BtnPlayer1Grid[x, y].BackColor = Color.PowderBlue;
                     BtnPlayer2Grid[x, y].BackColor = Color.PowderBlue;
@@ -211,6 +211,95 @@ namespace GridGame
             }
             Controls.Add(LblInstructions);
             Controls.Add(BtnConfirm);
+        }
+        // debug for AI ship generation
+        void displayDebugScreenForAIShips()
+        {
+            BtnPlayer2Grid = new Button[9, 9];
+            for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
+            {
+                for (int y = 0; y < BtnPlayer1Grid.GetLength(1); y++)
+                {
+                    // Create all buttons on the grid.
+                    BtnPlayer2Grid[x, y] = new Button();
+                    BtnPlayer2Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.33333) + (40 * x), ((int)(this.ClientSize.Height / 9)) + (40 * y), 40, 40);
+                    BtnPlayer2Grid[x, y].BackColor = Color.PowderBlue;
+
+                    BtnPlayer2Grid[x, y].Click += new EventHandler(this.BtnPlayer1GridEvent_Click);
+
+                    Controls.Add(BtnPlayer2Grid[x, y]);
+                }
+            }
+            randomiseSelection();
+        }
+        void randomiseSelection()
+        {
+            gameSettings.clearBoard2();
+            Random random = new Random();
+            
+            int shipSize = 5;
+            int cointoss;
+            int rdmX;
+            int rdmY;
+            bool firstThirdAdded = false;
+
+            while(shipSize > 1)
+            {
+                rdmX = random.Next(0, 9);
+                rdmY = random.Next(0, 9);
+                cointoss = random.Next(2);
+                // Ship will be placed horizontally
+                if (cointoss == 0)
+                {
+                    // Ship can be placed towards right side without going out of bounds
+                    if (rdmX + (shipSize - 1) < gameSettings.getBoard2().GetLength(0))
+                    {
+                        for (int x = 0; x < shipSize; x++)
+                        {
+                            BtnPlayer2Grid[rdmX + x, rdmY].BackColor = Color.Gray;
+                            gameSettings.setBoard2CellState(rdmX + x, rdmY, true);
+                        }
+                    }
+                    else
+                    {
+                        for (int x = 0; x < shipSize; x++)
+                        {
+                            BtnPlayer2Grid[rdmX - x, rdmY].BackColor = Color.Gray;
+                            gameSettings.setBoard2CellState(rdmX - x, rdmY, true);
+                        }
+                    }
+                }
+                // Ship will be placed vertically
+                if (cointoss == 1)
+                {
+                    // Ship can be placed towards the bottom without going out of bounds
+                    if (rdmY + (shipSize - 1) < gameSettings.getBoard2().GetLength(1))
+                    {
+                        for (int y = 0; y < shipSize; y++)
+                        {
+                            BtnPlayer2Grid[rdmX, rdmY + y].BackColor = Color.Gray;
+                            gameSettings.setBoard2CellState(rdmX, rdmY + y, true);
+                        }
+                    }
+                    else
+                    {
+                        for (int y = 0; y < shipSize; y++)
+                        {
+                            BtnPlayer2Grid[rdmX, rdmY - y].BackColor = Color.Gray;
+                            gameSettings.setBoard2CellState(rdmX, rdmY - y, true);
+                        }
+                    }
+                }
+               //  MessageBox.Show("Ship of size " + shipSize + " placed at " + rdmX + "," + rdmY);
+                if (shipSize == 3 && !firstThirdAdded)
+                {
+                    firstThirdAdded = true;
+                }
+                else
+                {
+                    shipSize--;
+                }
+            }
         }
         // Change colour of grid button when clicked.
         // still need to add further checks
@@ -310,25 +399,11 @@ namespace GridGame
             // Check if the selections made are valid.
             if (isSelectionValid())
             {
-                for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
-                {
-                    for (int y = 0; y < BtnPlayer1Grid.GetLength(1); y++)
-                    {
-                        // If the cell has been selected by the user
-                        if (BtnPlayer1Grid[x, y].BackColor == Color.Gray)
-                        {
-                            // need to program to transfer over to gameSettings object
-                        }
-                    }
-                }
                 clearForm();
                 // Clear array so it's not taking up memory.
-                //BtnPlayer1Grid = null;
+                // BtnPlayer1Grid = null;
                 playGame();
-            }
-            else
-            {
-                MessageBox.Show("Invalid amount of ship placements.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                randomiseSelection();
             }
         }
 
