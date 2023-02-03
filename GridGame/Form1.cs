@@ -145,10 +145,10 @@ namespace GridGame
         Button[,] BtnPlayer2Grid;
         GameSettings gameSettings = new GameSettings();
 
+        // timer variables
         int count = 0;
         Label lblTimer = new Label();
         Timer t = new Timer();
-        //TimeSpan tSpan = new TimeSpan();
 
         public Form1()
         {
@@ -156,6 +156,7 @@ namespace GridGame
             menuStrip();
             initMenu();
             soundButton(sound);
+            t.Tick += new EventHandler(tickEvent);
         }
 
         // needed to access code easily on opening the files
@@ -368,6 +369,7 @@ namespace GridGame
                         ((Button)sender).BackColor = Color.White;
 
                     CheckWin();
+                    counterSet();
                     gameSettings.setPlayer1Turn(false);
                     lblPlayerTurn.Text = "Player 2's Turn";
                 }
@@ -400,6 +402,7 @@ namespace GridGame
                             ((Button)sender).BackColor = Color.White;
 
                         CheckWin();
+                        counterSet();
                         gameSettings.setPlayer1Turn(true);
                         lblPlayerTurn.Text = "Player 1's Turn";
                     }
@@ -666,6 +669,8 @@ namespace GridGame
                 Controls.Remove(image);
             }
 
+            t.Enabled = false;
+
             //this.InitializeComponent();
             //menuStrip();
             //soundButton(sound);
@@ -722,7 +727,6 @@ namespace GridGame
             MainMenu strip = new MainMenu();
             MenuItem options = strip.MenuItems.Add("&Options");
             options.MenuItems.Add(new MenuItem("&Main Menu", stripMainMenuEvent_Click));
-            options.MenuItems.Add(new MenuItem("&Toggle Music On/Off"));
             options.MenuItems.Add(new MenuItem("&Exit", stripMainMenuExitEvent_Click));
             this.Menu = strip;
             MenuItem rules = strip.MenuItems.Add("&Rules", btnRulesEvent_Click);
@@ -735,7 +739,7 @@ namespace GridGame
             clearForm();
             // Loads the ship selection screen, prior to a game starting.
 
-            // difficulty code handling
+            // difficulty code handling, where 0 is easy, 1 is normal, 2 is hard, 3 is player vs player
             if (((Button)sender).Text == "Easy")
             {
                 gameSettings.setDifficulty(0);
@@ -784,6 +788,8 @@ namespace GridGame
                     // labels for scoring and turn identification
                     scoreP1.SetBounds(((this.ClientSize.Width / 2) - 49), 50, 27, 25);
                     scoreP2.SetBounds(((this.ClientSize.Width / 2) + 50), 50, 27, 25);
+                    scoreP1.TextAlign = HorizontalAlignment.Center;
+                    scoreP2.TextAlign = HorizontalAlignment.Center;
                     scoreP1.ForeColor = Color.Blue;
                     scoreP2.ForeColor = Color.Red;
                     scoreP1.Font = menuFont;
@@ -823,65 +829,75 @@ namespace GridGame
 
                     // timer code
                     lblTimer.Font = menuFont;
-                    lblTimer.Text = "0";
-                    lblTimer.SetBounds(((this.ClientSize.Width / 2) - 5), (this.ClientSize.Height / 2) - 223, 500, 25);
+                    counterSet();
+                    //lblTimer.Text = Convert.ToString(count);
+                    lblTimer.SetBounds(((this.ClientSize.Width / 2) - 2), (this.ClientSize.Height / 2) - 223, 500, 25);
                     Controls.Add(lblTimer);
 
-                    //t.Enabled = true;
-                    t.Tick += new EventHandler(tickEvent);
-                    t.Interval = 1000;
-                    t.Enabled = true;
-                    t.Start();
+                    startTick();
                 }
             }
         }
 
+        // starts timer
+        private void startTick()
+        {
+            t.Interval = 1000;
+            t.Enabled = true;
+        }
+
+        // occurs every 1s to update timer label and to check if timer runs out
         void tickEvent(object sender, EventArgs e)
         {
-            t.Stop();
             t.Enabled = false;
-            count++;
             lblTimer.Text = Convert.ToString(count);
-
-            // game timer (20s hard, 30s normal, 40s easy)
-            // difficulty 0 = easy, 1 = normal, 2 = normal, 3 = player vs player
-            if (gameSettings.getDifficulty() == 0)
+            count--;
+            
+            if (count == 0)
             {
-                if (lblTimer.Text == "40")
-                    gameTimerEvent();
-            }
-            else if (gameSettings.getDifficulty() == 1)
-            {
-                if (lblTimer.Text == "30")
-                    gameTimerEvent();
-            }
-            else if (gameSettings.getDifficulty() == 2)
-            {
-                if (lblTimer.Text == "20")
-                    gameTimerEvent();
-            }
-            else if (gameSettings.getDifficulty() == 3)
-            {
-                if (lblTimer.Text == "30")
-                    gameTimerEvent();
+                gameTimerEvent();
             }
 
             t.Enabled = true;
-            t.Start();
         }
 
+        // switches player's turn if timer exceeded
         void gameTimerEvent()
         {
-            //MessageBox.Show("Timer exceeded! Moving to opponent's turn.", "Timer");
-            count = 0;
-            //if (gameSettings.getPlayer1Turn())
-            //{
-            //    gameSettings.setPlayer1Turn(false);
-            //}
-            //else
-            //{
-            //    gameSettings.setPlayer1Turn(true);
-            //}
+            t.Enabled = false;
+            counterSet();
+            MessageBox.Show("Timer exceeded! Moving to opponent's turn.", "Timer");
+            if (gameSettings.getPlayer1Turn())
+            {
+                gameSettings.setPlayer1Turn(false);
+            }
+            else
+            {
+                gameSettings.setPlayer1Turn(true);
+            }
+            t.Enabled = true;
+        }
+
+        // game timer (20s hard, 30s normal, 40s easy)
+        // difficulty 0 = easy, 1 = normal, 2 = normal, 3 = player vs player
+        private void counterSet()
+        {
+            if (gameSettings.getDifficulty() == 0)
+            {
+                count = 40;
+            }
+            else if (gameSettings.getDifficulty() == 1)
+            {
+                count = 30;
+            }
+            else if (gameSettings.getDifficulty() == 2)
+            {
+                count = 20;
+            }
+            else if (gameSettings.getDifficulty() == 3)
+            {
+                count = 30;
+            }
         }
 
         // Start button click event, leads directly to difficulty menu
@@ -896,7 +912,7 @@ namespace GridGame
         {
             string msg1 = "The object of Battleship is to try and sink all of the other player's before they sink all of your ships. All of the other player's ships are somewhere on his/her board.  You try and hit them by clicking one of the squares on the board.  The other player will also try to hit your ships in turns.  Neither you nor the other player can see the other's board so you must try to guess where they are.";
             string msg2 = "Each player places the 5 ships somewhere on their board.  The ships can only be placed vertically or horizontally. Diagonal placement is not allowed. No part of a ship may hang off the edge of the board.  Ships may not overlap each other.  No ships may be placed on another ship. \r\n\r\nOnce the guessing begins, the players may not move the ships.\r\n\r\nThe 5 ships are:  Carrier (occupies 5 spaces), Battleship (4), Cruiser (3), Submarine (3), and Destroyer (2).";
-            string msg3 = "Player's take turns guessing by clicking on the grid squares. Upon guessing, a red X will be marked for hit, and a white O for miss. For example, if you click F6 and your opponent does not have any ship located at F6, that grid square will be marked with a white O. \r\n\r\nWhen all of the squares that one your ships occupies have been hit, the ship will be sunk. As soon as all of one player's ships have been sunk, the game ends.";
+            string msg3 = "Player's take turns guessing by clicking on the grid squares. Upon guessing, a red square will be marked for hit, and a white square for miss. For example, if you click F6 and your opponent does not have any ship located at F6, that grid square will be marked with a white square. \r\n\r\nWhen all of the squares that one your ships occupies have been hit, the ship will be sunk. As soon as all of one player's ships have been sunk, the game ends.";
             string caption = "Rules";
             MessageBox.Show(msg1, caption);
             MessageBox.Show(msg2, caption);
@@ -922,6 +938,7 @@ namespace GridGame
             if(scoreP1.Text == Convert.ToString(17) || scoreP2.Text == Convert.ToString(17))
             {
                 System.Threading.Thread.Sleep(1000);
+                t.Enabled = false;
                 endgame();
             }
         }
