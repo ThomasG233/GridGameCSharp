@@ -231,6 +231,7 @@ namespace GridGame
                 {
                     // Create all buttons on the grid.
                     BtnPlayer2Grid[x, y] = new Button();
+                    BtnPlayer2Grid[x, y].Text = Convert.ToString(x + "," + y);
                     BtnPlayer2Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.33333) + (40 * x), ((int)(this.ClientSize.Height / 9)) + (40 * y), 40, 40);
                     BtnPlayer2Grid[x, y].BackColor = Color.PowderBlue;
 
@@ -245,14 +246,14 @@ namespace GridGame
         {
             gameSettings.clearBoard2();
             Random random = new Random();
-            
+
             int shipSize = 5;
             int cointoss;
             int rdmX;
             int rdmY;
             bool firstThirdAdded = false;
 
-            while(shipSize > 1)
+            while (shipSize > 1)
             {
                 rdmX = random.Next(0, 9);
                 rdmY = random.Next(0, 9);
@@ -260,49 +261,302 @@ namespace GridGame
                 // Ship will be placed horizontally
                 if (cointoss == 0)
                 {
-                    // Ship can be placed towards right side without going out of bounds
-                    if (rdmX + (shipSize - 1) < gameSettings.getBoard2().GetLength(0))
+                    bool validated = false;
+                    while (!validated)
                     {
-                        for (int x = 0; x < shipSize; x++)
+                        // Ship can be placed towards right side without going out of bounds
+                        if (rdmX + (shipSize - 1) < gameSettings.getBoard2().GetLength(0))
                         {
-                            BtnPlayer2Grid[rdmX + x, rdmY].BackColor = Color.Gray;
-                            gameSettings.setBoard2CellState(rdmX + x, rdmY, true);
+                            bool shipOverlaps = false;
+                            MessageBox.Show("Checking " + rdmX + "," + rdmY + " horizontally. ->");
+                            // checks if the placement will overlap with an existing ship.
+                            for (int x = 0; x < shipSize; x++)
+                            {
+                                if (gameSettings.getBoard2CellState(rdmX + x, rdmY))
+                                {
+                                    shipOverlaps = true;
+                                }
+                            }
+                            if (shipOverlaps == true)
+                            {
+                                bool foundValidPlacement = false;
+                                int y = rdmY + 1;
+                                if (y > 8)
+                                {
+                                    y = 0;
+                                }
+                                while (!foundValidPlacement && y != rdmY)
+                                {
+                                    if (y > 8)
+                                    {
+                                        y = 0;
+                                    }
+                                    bool shipCanFit = true;
+                                    for (int x = 0; x < shipSize; x++)
+                                    {
+                                        if (!gameSettings.getBoard2CellState(rdmX + x, y))
+                                        {
+                                            shipCanFit = false;
+                                        }
+                                    }
+                                    if (shipCanFit)
+                                    {
+                                        foundValidPlacement = true;
+                                    }
+                                    else
+                                    {
+                                        y++;
+                                    }
+                                }
+                                if (foundValidPlacement)
+                                {
+                                    rdmY = y;
+                                    for (int x = 0; x < shipSize; x++)
+                                    {
+                                        BtnPlayer2Grid[rdmX + x, rdmY].BackColor = Color.Gray;
+                                        gameSettings.setBoard2CellState(rdmX + x, rdmY, true);
+                                    }
+                                    validated = true;
+                                }
+                                else
+                                {
+                                    rdmX = random.Next(0, 9);
+                                    rdmY = random.Next(0, 9);
+                                }
+                            }
+                            else
+                            {
+                                for (int x = 0; x < shipSize; x++)
+                                {
+                                    BtnPlayer2Grid[rdmX + x, rdmY].BackColor = Color.Gray;
+                                    gameSettings.setBoard2CellState(rdmX + x, rdmY, true);
+                                }
+                                validated = true;
+                            }
                         }
-                    }
-                    else
-                    {
-                        for (int x = 0; x < shipSize; x++)
+                        // Ship can be placed towards left side without going out of bounds
+                        else
                         {
-                            BtnPlayer2Grid[rdmX - x, rdmY].BackColor = Color.Gray;
-                            gameSettings.setBoard2CellState(rdmX - x, rdmY, true);
+                            bool shipOverlaps = false;
+                            MessageBox.Show("Checking " + rdmX + "," + rdmY + " horizontally. <-");
+                            // checks if the placement will overlap with an existing ship.
+                            for (int x = 0; x < shipSize; x++)
+                            {
+                                if (gameSettings.getBoard2CellState(rdmX - x, rdmY))
+                                {
+                                    shipOverlaps = true;
+                                }
+                            }
+                            if (shipOverlaps == true)
+                            {
+                                bool foundValidPlacement = false;
+                                int y = rdmY - 1;
+                                if (y < 0)
+                                {
+                                    y = 8;
+                                }
+                                while (!foundValidPlacement && y != rdmY)
+                                {
+                                    if (y < 0)
+                                    {
+                                        y = 8;
+                                    }
+                                    bool shipCanFit = true;
+                                    for (int x = 0; x < shipSize; x++)
+                                    {
+                                        if (!gameSettings.getBoard2CellState(rdmX - x, y))
+                                        {
+                                            shipCanFit = false;
+                                        }
+                                    }
+                                    if (shipCanFit)
+                                    {
+                                        foundValidPlacement = true;
+                                    }
+                                    else
+                                    {
+                                        y++;
+                                    }
+                                }
+                                if (foundValidPlacement)
+                                {
+                                    rdmY = y;
+                                    for (int x = 0; x < shipSize; x++)
+                                    {
+                                        BtnPlayer2Grid[rdmX - x, rdmY].BackColor = Color.Gray;
+                                        gameSettings.setBoard2CellState(rdmX - x, rdmY, true);
+                                    }
+                                    validated = true;
+                                }
+                                else
+                                {
+                                    rdmX = random.Next(0, 9);
+                                    rdmY = random.Next(0, 9);
+                                }
+                            }
+                            else
+                            {
+                                for (int x = 0; x < shipSize; x++)
+                                {
+                                    BtnPlayer2Grid[rdmX - x, rdmY].BackColor = Color.Gray;
+                                    gameSettings.setBoard2CellState(rdmX - x, rdmY, true);
+                                }
+                                validated = true;
+                            }
                         }
                     }
                 }
                 // Ship will be placed vertically
-                if (cointoss == 1)
+                else
                 {
                     // Ship can be placed towards the bottom without going out of bounds
-                    if (rdmY + (shipSize - 1) < gameSettings.getBoard2().GetLength(1))
+                    bool shipOverlaps = false;
+                    bool validated = false;
+                    while (!validated)
                     {
-                        for (int y = 0; y < shipSize; y++)
+                        if (rdmY + (shipSize - 1) < gameSettings.getBoard2().GetLength(1))
                         {
-                            BtnPlayer2Grid[rdmX, rdmY + y].BackColor = Color.Gray;
-                            gameSettings.setBoard2CellState(rdmX, rdmY + y, true);
+                            MessageBox.Show("Checking " + rdmX + "," + rdmY + " vertically. v");
+                            // checks if the placement will overlap with an existing ship.
+                            for (int y = 0; y < shipSize; y++)
+                            {
+                                if (gameSettings.getBoard2CellState(rdmX, rdmY + y))
+                                {
+                                    shipOverlaps = true;
+                                }
+                            }
+                            if (shipOverlaps == true)
+                            {
+                                bool foundValidPlacement = false;
+                                int x = rdmX + 1;
+                                if (x > 8)
+                                {
+                                    x = 0;
+                                }
+                                while (!foundValidPlacement && x != rdmX)
+                                {
+                                    if (x > 8)
+                                    {
+                                        x = 0;
+                                    }
+                                    bool shipCanFit = true;
+                                    for (int y = 0; y < shipSize; y++)
+                                    {
+                                        if (!gameSettings.getBoard2CellState(x, rdmY + y))
+                                        {
+                                            shipCanFit = false;
+                                        }
+                                    }
+                                    if (shipCanFit)
+                                    {
+                                        foundValidPlacement = true;
+                                    }
+                                    else
+                                    {
+                                        x++;
+                                    }
+                                }
+                                if (foundValidPlacement)
+                                {
+                                    rdmX = x;
+                                    for (int y = 0; y < shipSize; y++)
+                                    {
+                                        BtnPlayer2Grid[rdmX, rdmY + y].BackColor = Color.Gray;
+                                        gameSettings.setBoard2CellState(rdmX, rdmY + y, true);
+                                    }
+                                    validated = true;
+                                }
+                                else
+                                {
+                                    rdmX = random.Next(0, 9);
+                                    rdmY = random.Next(0, 9);
+                                }
+                            }
+                            else
+                            {
+                                for (int y = 0; y < shipSize; y++)
+                                {
+                                    BtnPlayer2Grid[rdmX, rdmY + y].BackColor = Color.Gray;
+                                    gameSettings.setBoard2CellState(rdmX, rdmY + y, true);
+                                }
+                                validated = true;
+                            }
                         }
-                    }
-                    else
-                    {
-                        for (int y = 0; y < shipSize; y++)
+                        else
                         {
-                            BtnPlayer2Grid[rdmX, rdmY - y].BackColor = Color.Gray;
-                            gameSettings.setBoard2CellState(rdmX, rdmY - y, true);
+                            // Ship can be placed towards the top without going out of bounds
+                            MessageBox.Show("Checking " + rdmX + "," + rdmY + " vertically. ^");
+                            // checks if the placement will overlap with an existing ship.
+                            for (int y = 0; y < shipSize; y++)
+                            {
+                                if (gameSettings.getBoard2CellState(rdmX, rdmY - y))
+                                {
+                                    shipOverlaps = true;
+                                }
+                            }
+                            if (shipOverlaps == true)
+                            {
+                                bool foundValidPlacement = false;
+                                int x = rdmX - 1;
+                                if (x < 0)
+                                {
+                                    x = 8;
+                                }
+                                while (!foundValidPlacement && x != rdmX)
+                                {
+                                    if (x < 0)
+                                    {
+                                        x = 8;
+                                    }
+                                    bool shipCanFit = true;
+                                    for (int y = 0; y < shipSize; y++)
+                                    {
+                                        if (!gameSettings.getBoard2CellState(x, rdmY - y))
+                                        {
+                                            shipCanFit = false;
+                                        }
+                                    }
+                                    if (shipCanFit)
+                                    {
+                                        foundValidPlacement = true;
+                                    }
+                                    else
+                                    {
+                                        x--;
+                                    }
+                                }
+                                if (foundValidPlacement)
+                                {
+                                    rdmX = x;
+                                    for (int y = 0; y < shipSize; y++)
+                                    {
+                                        BtnPlayer2Grid[rdmX, rdmY - y].BackColor = Color.Gray;
+                                        gameSettings.setBoard2CellState(rdmX, rdmY - y, true);
+                                    }
+                                    validated = true;
+                                }
+                                else
+                                {
+                                    rdmX = random.Next(0, 9);
+                                    rdmY = random.Next(0, 9);
+                                }
+                            }
+                            else
+                            {
+                                for (int y = 0; y < shipSize; y++)
+                                {
+                                    BtnPlayer2Grid[rdmX, rdmY - y].BackColor = Color.Gray;
+                                    gameSettings.setBoard2CellState(rdmX, rdmY - y, true);
+                                }
+                                validated = true;
+                            }
                         }
                     }
                 }
-               //  MessageBox.Show("Ship of size " + shipSize + " placed at " + rdmX + "," + rdmY);
+                MessageBox.Show("Ship of size " + shipSize + " placed at " + rdmX + "," + rdmY);
                 if (shipSize == 3 && !firstThirdAdded)
                 {
-                    firstThirdAdded = true;
+                   firstThirdAdded = true;
                 }
                 else
                 {
@@ -418,6 +672,9 @@ namespace GridGame
         // Confirm the grid placements.
         void BtnConfirmEvent_Click(object sender, EventArgs e)
         {
+            clearForm();
+            displayDebugScreenForAIShips();
+            /*
             // Check if the selections made are valid.
             if (isSelectionValid())
             {
@@ -427,6 +684,7 @@ namespace GridGame
                 playGame();
                 randomiseSelection();
             }
+            */
         }
 
         // Check the player's selections to see if it's valid.
@@ -452,15 +710,11 @@ namespace GridGame
                 return false;
             }
 
-            /* An efficient way to do this, rather than the large amount of code for the checks.
-             * Check FindFive() for comments on how it works
-             * */
             if (!(findShipInSelection(5) && findShipInSelection(4) && findShipInSelection(3) && findShipInSelection(3) && findShipInSelection(2)))
             {
                 gameSettings.clearBoard1();
                 return false;
             }
-
             return true;
         }
 
@@ -870,10 +1124,12 @@ namespace GridGame
             if (gameSettings.getPlayer1Turn())
             {
                 gameSettings.setPlayer1Turn(false);
+                lblPlayerTurn.Text = "Player 2's Turn";
             }
             else
             {
                 gameSettings.setPlayer1Turn(true);
+                lblPlayerTurn.Text = "Player 1's Turn";
             }
             t.Enabled = true;
         }
