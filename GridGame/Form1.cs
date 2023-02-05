@@ -18,6 +18,7 @@ namespace GridGame
 {
     public partial class Form1 : Form
     {
+        
         /* have put this here as it may come in use later.
         *  idea was hold all needed variables for the gameplay.
         */
@@ -99,9 +100,9 @@ namespace GridGame
             }
             public void clearBoard1()
             {
-                for (int x = 0; x > board1.GetLength(0); x++)
+                for (int x = 0; x < board1.GetLength(0); x++)
                 {
-                    for (int y = 0; y > board1.GetLength(1); y++)
+                    for (int y = 0; y < board1.GetLength(1); y++)
                     {
                         board1[x, y] = false;
                     }
@@ -109,9 +110,9 @@ namespace GridGame
             }
             public void clearBoard2()
             {
-                for (int x = 0; x > board2.GetLength(0); x++)
+                for (int x = 0; x < board2.GetLength(0); x++)
                 {
-                    for (int y = 0; y > board2.GetLength(1); y++)
+                    for (int y = 0; y < board2.GetLength(1); y++)
                     {
                         board2[x, y] = false;
                     }
@@ -131,6 +132,8 @@ namespace GridGame
         Label lblPlayerTurn = new Label();
         TextBox scoreP1 = new TextBox();
         TextBox scoreP2 = new TextBox();
+
+        
         //sound and music control lines of code
         bool sound = true;
         SoundPlayer explosion = new SoundPlayer(@"../../explosion.wav");
@@ -164,7 +167,7 @@ namespace GridGame
         // needed to access code easily on opening the files
         private void Form1_Load(object sender, EventArgs e)
         {
-
+           
         }
         // Ship Selection Screen visuals.
         private void initShipSelect()
@@ -181,9 +184,9 @@ namespace GridGame
             LblInstructions.Text = "Please select your ship locations:";
             LblInstructions.SetBounds((int)(this.ClientSize.Width / 3.55), 15, 400, 35);
             LblInstructions.TextAlign = ContentAlignment.TopCenter;
-            LblInstructions.Font = menuFont;
+            LblInstructions.Font = new Font(menuFont, FontStyle.Underline);
 
-            char[] letters = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i' };
+            char[] letters = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I' };
 
             BtnConfirm.SetBounds((int)(this.ClientSize.Width / 2) - 60, (int)(this.ClientSize.Height / 1.25), 100, 50);
             BtnConfirm.Text = "Confirm";
@@ -196,11 +199,13 @@ namespace GridGame
                 LblGridTop[x] = new Label();
                 LblGridTop[x].Text = Convert.ToString(letters[x]);
                 LblGridTop[x].TextAlign = ContentAlignment.MiddleLeft;
-                LblGridTop[x].SetBounds((int)((this.ClientSize.Width / 3.33333) + (40 * x)) + 15, ((int)(this.ClientSize.Height / 9)) - 15, 10, 15);
-
+                LblGridTop[x].Font = new Font(LblGridTop[x].Font, FontStyle.Bold);
+                LblGridTop[x].SetBounds((int)((this.ClientSize.Width / 3.35555) + (40 * x)) + 15, ((int)(this.ClientSize.Height / 9)) - 15, 12, 15);
+                
                 LblGridSide[x] = new Label();
-                LblGridSide[x].SetBounds((int)(this.ClientSize.Width / 3.33333) - 15, ((int)(this.ClientSize.Height / 9)) + (40 * x) + 14, 10, 15);
-                LblGridSide[x].Text = Convert.ToString(x);
+                LblGridSide[x].SetBounds((int)(this.ClientSize.Width / 3.35555) - 15, ((int)(this.ClientSize.Height / 9)) + (40 * x) + 14, 10, 15);
+                LblGridSide[x].Text = Convert.ToString(x + 1);
+                LblGridSide[x].Font = new Font(LblGridSide[x].Font, FontStyle.Bold);
                 LblGridSide[x].TextAlign = ContentAlignment.MiddleLeft;
 
                 Controls.Add(LblGridTop[x]);
@@ -676,10 +681,6 @@ namespace GridGame
                 playGame();
                 randomiseSelection();
             }
-            else
-            {
-                gameSettings.clearBoard1();
-            }
         }
 
         // Check the player's selections to see if it's valid.
@@ -701,19 +702,57 @@ namespace GridGame
             // Minimum number of cells selected needs to be 17.
             if (numberOfShipGrids != 17)
             {
-                MessageBox.Show("Invalid amount of ship placements.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Invalid amount of ship placed.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
 
-            if (!(findShipInSelection(5) && findShipInSelection(4) && findShipInSelection(3) && findShipInSelection(3) && findShipInSelection(2)))
+            bool foundFirstThree = false;
+            bool validPlacements = true;
+            for(int i = 5; i > 1; i--)
             {
-                return false;
+                if(!findShipInSelectionHFirst(i))
+                {
+                    validPlacements = false;
+                    break;
+                }
+                if (i == 3 && !foundFirstThree)
+                {
+                    i++;
+                    foundFirstThree = true;
+                }
+            }
+            if (!validPlacements)
+            {
+                foundFirstThree = false;
+                validPlacements = true;
+                for (int i = 5; i > 1; i--)
+                {
+                    if (!findShipInSelectionVFirst(i))
+                    {
+                        validPlacements = false;
+                        break;
+                    }
+                    if (i == 3 && !foundFirstThree)
+                    {
+                        i++;
+                        foundFirstThree = true;
+                    }
+                }
+                if(!validPlacements)
+                {
+                    MessageBox.Show("Your ship placements are not valid, please place your ships horizontally or vertically. The valid ship sizes are: \n\nCarrier (5 boxes), \nBattleship (4 boxes) \nCruiser (3 boxes) \nSubmarine (3 boxes) \nDestroyer (2 boxes)", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
             return true;
         }
 
         // Find the ship on the selection screen and see if the placement is valid.
-        bool findShipInSelection(int amountToFind)
+        bool findShipInSelectionHFirst(int amountToFind)
         {
             // HORIZONTAL CHECKING
             // Defines the search space to look for the ships.
@@ -724,7 +763,7 @@ namespace GridGame
                     // Set this to 0 for indexing.
                     int val = 0;
                     // Check to see if there exists a ship pattern.
-                    while (val < amountToFind)
+                    while (val != amountToFind)
                     {
                         if (BtnPlayer1Grid[x + val, y].BackColor == Color.Gray)
                         {
@@ -733,7 +772,7 @@ namespace GridGame
                         else
                         {
                             // forcibly break out of loop.
-                            val = 6;
+                            break;
                         }
                     }
                     // If a ship has been found.
@@ -748,7 +787,177 @@ namespace GridGame
                             if (gameSettings.getBoard1CellState(x + val, y))
                             {
                                 found = true;
-                                val = 6;
+                                break;
+                            }
+                            else
+                            {
+                                val++;
+                            }
+                        }
+                        // If the ship doesn't overlap with others in the grid.
+                        if (!found)
+                        {
+                            // Add ship into gameSettings board.
+                            for (int i = 0; i < amountToFind; i++)
+                            {
+                                gameSettings.setBoard1CellState(x + i, y, true);
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            // VERTICAL CHECKING
+            // Defines the search space to look for the ships.
+            for (int x = 0; x < gameSettings.getBoard1().GetLength(0); x++)
+            {
+                for (int y = 0; y < gameSettings.getBoard1().GetLength(1) - (amountToFind - 1); y++)
+                {
+                    // Set this to 0 for indexing.
+                    int val = 0;
+                    // Checks to see if a ship pattern exists on the grid.
+                    while (val < amountToFind)
+                    {
+                        if (BtnPlayer1Grid[x, y + val].BackColor == Color.Gray)
+                        {
+                            val++;
+                        }
+                        else
+                        {
+                            // forcibly break out of loop.
+                            break;
+                        }
+                    }
+                    // If a ship has been found.
+                    if (val == amountToFind)
+                    {
+                        val = 0;
+                        bool found = false;
+                        // Check to see if this selection encapsulates another.
+                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
+                        while (val < amountToFind)
+                        {
+                            if (gameSettings.getBoard1CellState(x, y + val))
+                            {
+                                found = true;
+                                break;
+                            }
+                            else
+                            {
+                                val++;
+                            }
+                        }
+                        // If the ship doesn't overlap with others in the grid.
+                        if (!found)
+                        {
+                            // Add into gameSettings board.
+                            for (int i = 0; i < amountToFind; i++)
+                            {
+                                gameSettings.setBoard1CellState(x, y + i, true);
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            gameSettings.clearBoard1();
+            return false;
+        }
+
+        bool findShipInSelectionVFirst(int amountToFind)
+        {
+            // VERTICAL CHECKING
+            // Defines the search space to look for the ships.
+            for (int x = 0; x < gameSettings.getBoard1().GetLength(0); x++)
+            {
+                for (int y = 0; y < gameSettings.getBoard1().GetLength(1) - (amountToFind - 1); y++)
+                {
+                    // Set this to 0 for indexing.
+                    int val = 0;
+                    // Checks to see if a ship pattern exists on the grid.
+                    while (val < amountToFind)
+                    {
+                        if (BtnPlayer1Grid[x, y + val].BackColor == Color.Gray)
+                        {
+                            val++;
+                        }
+                        else
+                        {
+                            // forcibly break out of loop.
+                            break;
+                        }
+                    }
+                    // If a ship has been found.
+                    if (val == amountToFind)
+                    {
+                        val = 0;
+                        bool found = false;
+                        // Check to see if this selection encapsulates another.
+                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
+                        while (val < amountToFind)
+                        {
+                            if (gameSettings.getBoard1CellState(x, y + val))
+                            {
+                                found = true;
+                                break;
+                            }
+                            else
+                            {
+                                val++;
+                            }
+                        }
+                        // If the ship doesn't overlap with others in the grid.
+                        if (!found)
+                        {
+                            // Add into gameSettings board.
+                            for (int i = 0; i < amountToFind; i++)
+                            {
+                                gameSettings.setBoard1CellState(x, y + i, true);
+                            }
+                            // MessageBox.Show("Found a ship of " + amountToFind + ", added.", "Added successfully");
+                            return true;
+                        }
+                        else
+                        {
+                            // MessageBox.Show("Found a ship of " + amountToFind + " but found previously, not added.", "Not added");
+                        }
+                    }
+                }
+            }
+            // HORIZONTAL CHECKING
+            // Defines the search space to look for the ships.
+            for (int x = 0; x < gameSettings.getBoard1().GetLength(0) - (amountToFind - 1); x++)
+            {
+                for (int y = 0; y < gameSettings.getBoard1().GetLength(1); y++)
+                {
+                    // Set this to 0 for indexing.
+                    int val = 0;
+                    // Check to see if there exists a ship pattern.
+                    while (val != amountToFind)
+                    {
+                        if (BtnPlayer1Grid[x + val, y].BackColor == Color.Gray)
+                        {
+                            val++;
+                        }
+                        else
+                        {
+                            // forcibly break out of loop.
+                            break;
+                        }
+                    }
+                    // If a ship has been found.
+                    if (val == amountToFind)
+                    {
+                        val = 0;
+                        bool found = false;
+                        // Check to see if this selection encapsulates another.
+                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
+                        while (val < amountToFind)
+                        {
+                            if (gameSettings.getBoard1CellState(x + val, y))
+                            {
+                                found = true;
+                                break;
                             }
                             else
                             {
@@ -773,64 +982,10 @@ namespace GridGame
                     }
                 }
             }
-            // VERTICAL CHECKING
-            // Defines the search space to look for the ships.
-            for (int x = 0; x < gameSettings.getBoard1().GetLength(0); x++)
-            {
-                for (int y = 0; y < gameSettings.getBoard1().GetLength(1) - (amountToFind - 1); y++)
-                {
-                    // Set this to 0 for indexing.
-                    int val = 0;
-                    // Checks to see if a ship pattern exists on the grid.
-                    while (val < amountToFind)
-                    {
-                        if (BtnPlayer1Grid[x, y + val].BackColor == Color.Gray)
-                        {
-                            val++;
-                        }
-                        else
-                        {
-                            // forcibly break out of loop.
-                            val = 6;
-                        }
-                    }
-                    // If a ship has been found.
-                    if (val == amountToFind)
-                    {
-                        val = 0;
-                        bool found = false;
-                        // Check to see if this selection encapsulates another.
-                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
-                        while (val < amountToFind)
-                        {
-                            if (gameSettings.getBoard1CellState(x, y + val))
-                            {
-                                found = true;
-                                val = 6;
-                            }
-                            val++;
-                        }
-                        // If the ship doesn't overlap with others in the grid.
-                        if (!found)
-                        {
-                            // Add into gameSettings board.
-                            for (int i = 0; i < amountToFind; i++)
-                            {
-                                gameSettings.setBoard1CellState(x, y + i, true);
-                            }
-                            // MessageBox.Show("Found a ship of " + amountToFind + ", added.", "Added successfully");
-                            return true;
-                        }
-                        else
-                        {
-                            // MessageBox.Show("Found a ship of " + amountToFind + " but found previously, not added.", "Not added");
-                        }
-                    }
-                }
-            }
-            MessageBox.Show("Could not find a ship of size " + amountToFind + " in your selections.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            gameSettings.clearBoard1();
             return false;
         }
+
         // Display the main menu
         private void initMenu()
         {
@@ -1017,9 +1172,30 @@ namespace GridGame
 
             // layout buttons for the game
 
+            Label[] LblTop1 = new Label[9];
+            Label[] LblTop2 = new Label[9];
+            Label[] LblSide1 = new Label[9];
+            Label[] LblSide2 = new Label[9];
+
+            char[] letters = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I' };
+
             for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
             {
+                LblTop1[x] = new Label();
+                LblTop1[x].Font = new Font(LblTop1[x].Font, FontStyle.Bold);
+                LblTop1[x].TextAlign = ContentAlignment.MiddleLeft;
+                LblTop1[x].SetBounds((this.ClientSize.Width / 2) - 25, 101 + (31 * x) + 6, 15, 15);
+                LblTop1[x].Text = Convert.ToString(letters[x]);
 
+                LblTop2[x] = new Label();
+                LblTop2[x].Font = new Font(LblTop2[x].Font, FontStyle.Bold);
+                LblTop2[x].TextAlign = ContentAlignment.MiddleRight;
+                LblTop2[x].SetBounds((this.ClientSize.Width / 2) + 35, 101 + (31 * x) + 6, 15, 15);
+                LblTop2[x].Text = Convert.ToString(letters[x]);
+
+
+                Controls.Add(LblTop1[x]);
+                Controls.Add(LblTop2[x]);
                 for (int y = 0; y < BtnPlayer1Grid.GetLength(1); y++)
                 {
                     // Create all buttons on the grid.
