@@ -51,3 +51,14 @@ C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\D
 C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
 C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.exe
 C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.pdb
+U:\AC22005\CSharpGridGame\GridGame\bin\Debug\GridGame.exe.config
+U:\AC22005\CSharpGridGame\GridGame\bin\Debug\GridGame.exe
+U:\AC22005\CSharpGridGame\GridGame\bin\Debug\GridGame.pdb
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.csproj.AssemblyReference.cache
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.csproj.SuggestedBindingRedirects.cache
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.Form1.resources
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.Properties.Resources.resources
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.csproj.GenerateResource.cache
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.exe
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.pdb

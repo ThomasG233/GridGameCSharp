@@ -13,6 +13,7 @@ using System.Xml;
 using System.Media;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Deployment.Application;
 
 namespace GridGame
 {
@@ -30,6 +31,7 @@ namespace GridGame
             private bool player1Turn = true;
             private bool ai = false;
             private int score1 = 0, score2 = 0;
+            private int lastHitX = -1, lastHitY = -1;
 
             public void setDifficulty(int diff)
             {
@@ -126,6 +128,26 @@ namespace GridGame
             public int getScore2()
             {
                 return score2;
+            }
+
+            public int getLastHitX()
+            {
+                return lastHitX;
+            }
+
+            public int getLastHitY()
+            {
+                return lastHitY;
+            }
+
+            public void setLastHitX(int x)
+            {
+                lastHitX = x;
+            }
+
+            public void setLastHitY(int y)
+            {
+                lastHitY = y;
             }
         }
 
@@ -628,11 +650,12 @@ namespace GridGame
                     counterSet();
                     gameSettings.setPlayer1Turn(false);
                     lblPlayerTurn.Text = "Player 2's Turn";
+                    AIPlacement();
                 }
             }
             else
             {
-                if(gameSettings.getAI() == false)
+                if (gameSettings.getAI() == false)
                 {
                     if (p == 2)
                     {
@@ -663,11 +686,320 @@ namespace GridGame
                         lblPlayerTurn.Text = "Player 1's Turn";
                     }
                 }
+            }
+        }
+
+        void AIPlacement()
+        {
+            Timer musicTimer = new Timer();
+            musicTimer.Interval = 1250;
+
+            // code for ai selection of bomb
+            Random rnd = new Random();
+            bool guess = true;
+            bool vertical = true;
+            if (gameSettings.getLastHitX() != -1)
+            {
+                int z = rnd.Next(4);
+                if (gameSettings.getDifficulty() == 0 && (z == 4))
+                {
+                    guess = false;
+                }
+                else if (gameSettings.getDifficulty() == 1 && (z == 3 || z == 4))
+                {
+                    guess = false;
+                }
+                else
+                    guess = false;
+            }
+
+            if (guess == false)
+            {
+                int tempX = -1;
+                int tempY = -1;
+                if (gameSettings.getLastHitX() == 0 && gameSettings.getLastHitY() == 0)
+                {
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                        vertical = false;
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red)
+                        vertical = true;
+                    else
+                        vertical = true;
+                }
+                else if (gameSettings.getLastHitX() == 0 && gameSettings.getLastHitY() == 8)
+                {
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                        vertical = false;
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red)
+                        vertical = true;
+                    else
+                        vertical = true;
+                }
+                else if (gameSettings.getLastHitX() == 8 && gameSettings.getLastHitY() == 0)
+                {
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                        vertical = false;
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red)
+                        vertical = true;
+                    else
+                        vertical = true;
+                }
+                else if (gameSettings.getLastHitX() == 8 && gameSettings.getLastHitY() == 8)
+                {
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                        vertical = false;
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red)
+                        vertical = true;
+                    else
+                        vertical = true;
+                }
+                else if (gameSettings.getLastHitX() == 0)
+                {
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                        vertical = false;
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red)
+                        vertical = true;
+                    else
+                        vertical = true;
+                }
+                else if (gameSettings.getLastHitX() == 8)
+                {
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                        vertical = false;
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red)
+                        vertical = true;
+                    else
+                        vertical = true;
+                }
+                else if (gameSettings.getLastHitY() == 0)
+                {
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                        vertical = false;
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red)
+                        vertical = true;
+                    else
+                        vertical = true;
+                }
+                else if (gameSettings.getLastHitY() == 8)
+                {
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                        vertical = false;
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red)
+                        vertical = true;
+                    else
+                        vertical = true;
+                }
                 else
                 {
-                    // code for ai selection of bomb
-                    // CheckWin();
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                        vertical = false;
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red)
+                        vertical = true;
+                    else
+                        vertical = true;
                 }
+
+                int counter = 0;
+                int x = gameSettings.getLastHitX();
+                int y = gameSettings.getLastHitY();
+                if (vertical == true)
+                {
+                    //for loop until white or end reached
+                    if (gameSettings.getLastHitY() == 0)
+                    {
+                        for (int i = 1; i < 5; i++)
+                        {
+                            if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + i].BackColor == Color.Gray || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + i].BackColor == Color.PowderBlue)
+                            {
+                                tempX = gameSettings.getLastHitX();
+                                tempY = gameSettings.getLastHitY() + i;
+                                counter++;
+                                break;
+                            }
+                            else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + i].BackColor == Color.White)
+                                break;
+                        }
+                    }
+                    else if (gameSettings.getLastHitY() == 8)
+                    {
+                        for (int i = 1; i < 5; i++)
+                        {
+                            if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - i].BackColor == Color.Gray || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - i].BackColor == Color.PowderBlue)
+                            {
+                                tempX = gameSettings.getLastHitX();
+                                tempY = gameSettings.getLastHitY() - i;
+                                counter++;
+                                break;
+                            }
+                            else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - i].BackColor == Color.White)
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 1; i < 5; i++)
+                        {
+                            if (gameSettings.getLastHitY() + i < 9)
+                            {
+                                if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + i].BackColor == Color.Gray || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + i].BackColor == Color.PowderBlue)
+                                {
+                                    tempX = gameSettings.getLastHitX();
+                                    tempY = gameSettings.getLastHitY() + i;
+                                    counter++;
+                                    break;
+                                }
+                                else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + i].BackColor == Color.White)
+                                    break;
+                            }
+                        }
+                        for (int i = 1; i < 5; i++)
+                        {
+                            if (gameSettings.getLastHitY() - i > -1)
+                            {
+                                if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - i].BackColor == Color.Gray || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - i].BackColor == Color.PowderBlue)
+                                {
+                                    tempX = gameSettings.getLastHitX();
+                                    tempY = gameSettings.getLastHitY() - i;
+                                    counter++;
+                                    break;
+                                }
+                                else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - i].BackColor == Color.White)
+                                    break;
+                            }
+                        }
+                    }
+
+                }
+                else
+                {
+                    if (gameSettings.getLastHitX() == 0)
+                    {
+                        for (int i = 1; i < 5; i++)
+                        {
+                            if (BtnPlayer1Grid[gameSettings.getLastHitX() + i, gameSettings.getLastHitY()].BackColor == Color.Gray || BtnPlayer1Grid[gameSettings.getLastHitX() + i, gameSettings.getLastHitY()].BackColor == Color.PowderBlue)
+                            {
+                                tempX = gameSettings.getLastHitX() + i;
+                                tempY = gameSettings.getLastHitY();
+                                counter++;
+                                break;
+                            }
+                            else if (BtnPlayer1Grid[gameSettings.getLastHitX() + i, gameSettings.getLastHitY()].BackColor == Color.White)
+                                break;
+                        }
+                    }
+                    else if (gameSettings.getLastHitX() == 8)
+                    {
+                        for (int i = 1; i < 5; i++)
+                        {
+                            if (BtnPlayer1Grid[gameSettings.getLastHitX() - i, gameSettings.getLastHitY()].BackColor == Color.Gray || BtnPlayer1Grid[gameSettings.getLastHitX() - i, gameSettings.getLastHitY()].BackColor == Color.PowderBlue)
+                            {
+                                tempX = gameSettings.getLastHitX() - i;
+                                tempY = gameSettings.getLastHitY();
+                                counter++;
+                                break;
+                            }
+                            else if (BtnPlayer1Grid[gameSettings.getLastHitX() - i, gameSettings.getLastHitY()].BackColor == Color.White)
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 1; i < 5; i++)
+                        {
+                            if (gameSettings.getLastHitX() + i < 9)
+                            {
+                                if (BtnPlayer1Grid[gameSettings.getLastHitX() + i, gameSettings.getLastHitY()].BackColor == Color.Gray || BtnPlayer1Grid[gameSettings.getLastHitX() + i, gameSettings.getLastHitY()].BackColor == Color.PowderBlue)
+                                {
+                                    tempX = gameSettings.getLastHitX() + i;
+                                    tempY = gameSettings.getLastHitY();
+                                    counter++;
+                                    break;
+                                }
+                                else if (BtnPlayer1Grid[gameSettings.getLastHitX() + i, gameSettings.getLastHitY()].BackColor == Color.White)
+                                    break;
+                            }
+                        }
+                        for (int i = 1; i < 5; i++)
+                        {
+                            if (gameSettings.getLastHitX() - i > -1)
+                            {
+                                if (BtnPlayer1Grid[gameSettings.getLastHitX() - i, gameSettings.getLastHitY()].BackColor == Color.Gray || BtnPlayer1Grid[gameSettings.getLastHitX() - i, gameSettings.getLastHitY()].BackColor == Color.PowderBlue)
+                                {
+                                    tempX = gameSettings.getLastHitX() - i;
+                                    tempY = gameSettings.getLastHitY();
+                                    counter++;
+                                    break;
+                                }
+                                else if (BtnPlayer1Grid[gameSettings.getLastHitX() - i, gameSettings.getLastHitY()].BackColor == Color.White)
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                if (counter == 0)
+                {
+                    gameSettings.setLastHitX(-1);
+                    gameSettings.setLastHitY(-1);
+                    guess = true;
+                }
+                else
+                {
+                    if(gameSettings.getBoard1CellState(tempX, tempY) == true)
+                    {
+                        BtnPlayer1Grid[tempX, tempY].BackColor = Color.Red;
+                        gameSettings.setScore2(gameSettings.getScore2() + 1);
+                        scoreP2.Text = Convert.ToString(gameSettings.getScore2());
+                        playMusic(false);
+                        musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
+                        musicTimer.Start();
+                        playSound();
+                        gameSettings.setLastHitX(tempX);
+                        gameSettings.setLastHitY(tempY);
+
+                    }
+                    else
+                    {
+                        BtnPlayer1Grid[tempX, tempY].BackColor = Color.White;
+                    }
+                    CheckWin();
+                    counterSet();
+                    gameSettings.setPlayer1Turn(true);
+                    lblPlayerTurn.Text = "Player 1's Turn";
+                }
+
+            }
+
+            if (guess == true)
+            {
+                int xval = rnd.Next(9);
+                int yval = rnd.Next(9);
+                if (BtnPlayer1Grid[xval, yval].BackColor == Color.Red || BtnPlayer1Grid[xval, yval].BackColor == Color.White)
+                {
+                    xval = rnd.Next(9);
+                    yval = rnd.Next(9);
+                }
+                else if (gameSettings.getBoard1CellState(xval, yval) == true)
+                {
+                    BtnPlayer1Grid[xval, yval].BackColor = Color.Red;
+                    gameSettings.setScore2(gameSettings.getScore2() + 1);
+                    scoreP2.Text = Convert.ToString(gameSettings.getScore2());
+                    playMusic(false);
+                    musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
+                    musicTimer.Start();
+                    playSound();
+                    gameSettings.setLastHitX(xval);
+                    gameSettings.setLastHitY(yval);
+
+                }
+                else
+                {
+                    BtnPlayer1Grid[xval, yval].BackColor = Color.White;
+                }
+                CheckWin();
+                counterSet();
+                gameSettings.setPlayer1Turn(true);
+                lblPlayerTurn.Text = "Player 1's Turn";
             }
         }
 
@@ -1146,21 +1478,25 @@ namespace GridGame
             if (((Button)sender).Text == "Easy")
             {
                 gameSettings.setDifficulty(0);
+                gameSettings.setAI(true);
                 initShipSelect();
             }
             else if (((Button)sender).Text == "Normal")
             {
                 gameSettings.setDifficulty(1);
+                gameSettings.setAI(true);
                 initShipSelect();
             }
             else if (((Button)sender).Text == "Hard")
             {
                 gameSettings.setDifficulty(2);
+                gameSettings.setAI(true);
                 initShipSelect();
             }
             else
             {
                 gameSettings.setDifficulty(3);
+                gameSettings.setAI(false);
                 initShipSelect();
             }
 
@@ -1203,7 +1539,8 @@ namespace GridGame
                     BtnPlayer2Grid[x, y].SetBounds(((this.ClientSize.Width / 2) + 50) + (31 * y), 349 - (31 * x), 25, 25);
 
                     BtnPlayer1Grid[x, y].Click -= BtnPlayer1GridEvent_Click;
-                    BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnTargetSelectionEvent_Click);
+                    if(gameSettings.getAI() == false)
+                        BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnTargetSelectionEvent_Click);
                     BtnPlayer2Grid[x, y].Click += new EventHandler(this.BtnTargetSelectionEvent_Click);
 
                     BtnPlayer1Grid[x, y].Name = "P1" + Convert.ToString(x) + Convert.ToString(y);
@@ -1295,6 +1632,8 @@ namespace GridGame
             {
                 gameSettings.setPlayer1Turn(false);
                 lblPlayerTurn.Text = "Player 2's Turn";
+                if(gameSettings.getAI() == true)
+                    AIPlacement();
             }
             else
             {
