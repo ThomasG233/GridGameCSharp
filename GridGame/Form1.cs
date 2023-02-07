@@ -341,7 +341,7 @@ namespace GridGame
                                     rdmY = y;
                                     for (int x = 0; x < shipSize; x++)
                                     {
-                                        BtnPlayer2Grid[rdmX + x, rdmY].BackColor = shipColours[(shipSize - 2)];
+                                        //BtnPlayer2Grid[rdmX + x, rdmY].BackColor = shipColours[(shipSize - 2)];
                                         gameSettings.setBoard2CellState(rdmX + x, rdmY, true);
                                     }
                                     validated = true;
@@ -356,7 +356,7 @@ namespace GridGame
                             {
                                 for (int x = 0; x < shipSize; x++)
                                 {
-                                    BtnPlayer2Grid[rdmX + x, rdmY].BackColor = shipColours[(shipSize - 2)];
+                                    //BtnPlayer2Grid[rdmX + x, rdmY].BackColor = shipColours[(shipSize - 2)];
                                     gameSettings.setBoard2CellState(rdmX + x, rdmY, true);
                                 }
                                 validated = true;
@@ -410,7 +410,7 @@ namespace GridGame
                                     rdmY = y;
                                     for (int x = 0; x < shipSize; x++)
                                     {
-                                        BtnPlayer2Grid[rdmX - x, rdmY].BackColor = shipColours[(shipSize - 2)];
+                                        //BtnPlayer2Grid[rdmX - x, rdmY].BackColor = shipColours[(shipSize - 2)];
                                         gameSettings.setBoard2CellState(rdmX - x, rdmY, true);
                                     }
                                     validated = true;
@@ -425,7 +425,7 @@ namespace GridGame
                             {
                                 for (int x = 0; x < shipSize; x++)
                                 {
-                                    BtnPlayer2Grid[rdmX - x, rdmY].BackColor = shipColours[(shipSize - 2)];
+                                    //BtnPlayer2Grid[rdmX - x, rdmY].BackColor = shipColours[(shipSize - 2)];
                                     gameSettings.setBoard2CellState(rdmX - x, rdmY, true);
                                 }
                                 validated = true;
@@ -487,7 +487,7 @@ namespace GridGame
                                     rdmX = x;
                                     for (int y = 0; y < shipSize; y++)
                                     {
-                                        BtnPlayer2Grid[rdmX, rdmY + y].BackColor = shipColours[(shipSize - 2)];
+                                        //BtnPlayer2Grid[rdmX, rdmY + y].BackColor = shipColours[(shipSize - 2)];
                                         gameSettings.setBoard2CellState(rdmX, rdmY + y, true);
                                     }
                                     validated = true;
@@ -502,7 +502,7 @@ namespace GridGame
                             {
                                 for (int y = 0; y < shipSize; y++)
                                 {
-                                    BtnPlayer2Grid[rdmX, rdmY + y].BackColor = shipColours[(shipSize - 2)];
+                                    //BtnPlayer2Grid[rdmX, rdmY + y].BackColor = shipColours[(shipSize - 2)];
                                     gameSettings.setBoard2CellState(rdmX, rdmY + y, true);
                                 }
                                 validated = true;
@@ -555,7 +555,7 @@ namespace GridGame
                                     rdmX = x;
                                     for (int y = 0; y < shipSize; y++)
                                     {
-                                        BtnPlayer2Grid[rdmX, rdmY - y].BackColor = shipColours[(shipSize - 2)];
+                                        //BtnPlayer2Grid[rdmX, rdmY - y].BackColor = shipColours[(shipSize - 2)];
                                         gameSettings.setBoard2CellState(rdmX, rdmY - y, true);
                                     }
                                     validated = true;
@@ -570,7 +570,7 @@ namespace GridGame
                             {
                                 for (int y = 0; y < shipSize; y++)
                                 {
-                                    BtnPlayer2Grid[rdmX, rdmY - y].BackColor = shipColours[(shipSize - 2)];
+                                    //BtnPlayer2Grid[rdmX, rdmY - y].BackColor = shipColours[(shipSize - 2)];
                                     gameSettings.setBoard2CellState(rdmX, rdmY - y, true);
                                 }
                                 validated = true;
@@ -610,9 +610,6 @@ namespace GridGame
         {
             //using button name to associate it with the x and y values of it in the players bool board
             String name = ((Button)sender).Name;
-            //char pVal = name[1];
-            //char xVal = name[2];
-            //char yVal = name[3];
             int p = int.Parse(name[1].ToString());
             int x = int.Parse(name[2].ToString());
             int y = int.Parse(name[3].ToString());
@@ -621,9 +618,10 @@ namespace GridGame
             Timer musicTimer = new Timer();
             musicTimer.Interval = 1250;
 
+            // checks whose turn it is
             if (gameSettings.getPlayer1Turn() == true)
             {
-                if (p == 1)
+                if (p == 1) // it is player 1's turn and if they select a button on their own side or a button on the enemy side that has already been chosen then through message box errors
                 {
                     MessageBox.Show("You Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -633,7 +631,7 @@ namespace GridGame
                 }
                 else
                 {
-                    if (gameSettings.getBoard2CellState(x, y) == true)
+                    if (gameSettings.getBoard2CellState(x, y) == true) // if chosen button is a hit then turn the button red otherwise turn it white
                     {
                         ((Button)sender).BackColor = Color.Red;
                         gameSettings.setScore1(gameSettings.getScore1() + 1);
@@ -653,11 +651,11 @@ namespace GridGame
                     AIPlacement();
                 }
             }
-            else
+            else // start of player 2's turn but if it is against an AI then this doesn't run as there is not real second player
             {
                 if (gameSettings.getAI() == false)
                 {
-                    if (p == 2)
+                    if (p == 2) //same errors thrown but for player 2
                     {
                         MessageBox.Show("You Can't Target Your Own Side.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
@@ -667,7 +665,7 @@ namespace GridGame
                     }
                     else
                     {
-                        if (gameSettings.getBoard1CellState(x, y) == true)
+                        if (gameSettings.getBoard1CellState(x, y) == true) //same as earlier
                         {
                             ((Button)sender).BackColor = Color.Red;
                             gameSettings.setScore2(gameSettings.getScore2() + 1);
@@ -689,6 +687,7 @@ namespace GridGame
             }
         }
 
+        // AI placement of the bombs
         void AIPlacement()
         {
             Timer musicTimer = new Timer();
@@ -698,114 +697,123 @@ namespace GridGame
             Random rnd = new Random();
             bool guess = true;
             bool vertical = true;
-            if (gameSettings.getLastHitX() != -1)
+
+            // depending on the difficulty, the chance of the ai making an educated guess increases as the game gets harder
+            if (gameSettings.getLastHitX() != -1) //if the last guess was a hit then use that as the base for the next guess
             {
                 int z = rnd.Next(4);
-                if (gameSettings.getDifficulty() == 0 && (z == 4))
-                {
+                if (gameSettings.getDifficulty() == 0 && (z == 3)) //25% chance of making an educated guess
                     guess = false;
-                }
-                else if (gameSettings.getDifficulty() == 1 && (z == 3 || z == 4))
-                {
+                else if (gameSettings.getDifficulty() == 1 && (z == 2 || z == 3)) //50% chance of making an educated guess
                     guess = false;
-                }
-                else
+                else if(gameSettings.getDifficulty() == 2) //Always makes an educated guess as its meant to be hard
                     guess = false;
             }
 
+            //code to check the surrounding buttons of the last hit ship and chooses one based on the position of it
+            //looks out for already hit ships using background color red and also checks if the button is white so that it goes in a different direction
             if (guess == false)
             {
                 int tempX = -1;
                 int tempY = -1;
-                if (gameSettings.getLastHitX() == 0 && gameSettings.getLastHitY() == 0)
+                if (gameSettings.getLastHitX() == 0 && gameSettings.getLastHitY() == 0) // top left corner
                 {
-                    if (BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.White)
                         vertical = false;
                     else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red)
                         vertical = true;
                     else
-                        vertical = true;
+                        if (rnd.Next(2) == 0) // randomise whether the placement will be vertical or horizontal if no clear option 
+                            vertical = false;
                 }
-                else if (gameSettings.getLastHitX() == 0 && gameSettings.getLastHitY() == 8)
+                else if (gameSettings.getLastHitX() == 0 && gameSettings.getLastHitY() == 8) // bottom left corner
                 {
-                    if (BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.White)
                         vertical = false;
                     else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red)
                         vertical = true;
                     else
-                        vertical = true;
+                        if (rnd.Next(2) == 0)
+                            vertical = false;
                 }
-                else if (gameSettings.getLastHitX() == 8 && gameSettings.getLastHitY() == 0)
+                else if (gameSettings.getLastHitX() == 8 && gameSettings.getLastHitY() == 0) // top right corner
                 {
-                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.White)
                         vertical = false;
                     else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red)
                         vertical = true;
                     else
-                        vertical = true;
+                        if (rnd.Next(2) == 0)
+                            vertical = false;
                 }
-                else if (gameSettings.getLastHitX() == 8 && gameSettings.getLastHitY() == 8)
+                else if (gameSettings.getLastHitX() == 8 && gameSettings.getLastHitY() == 8) // bottom right corner
                 {
-                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.White)
                         vertical = false;
                     else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red)
                         vertical = true;
                     else
-                        vertical = true;
+                        if (rnd.Next(2) == 0)
+                            vertical = false;
                 }
-                else if (gameSettings.getLastHitX() == 0)
+                else if (gameSettings.getLastHitX() == 0) // along the top edge
                 {
-                    if (BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red || (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.White && BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.White))
                         vertical = false;
                     else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red)
                         vertical = true;
                     else
-                        vertical = true;
+                        if (rnd.Next(2) == 0)
+                            vertical = false;
                 }
-                else if (gameSettings.getLastHitX() == 8)
+                else if (gameSettings.getLastHitX() == 8) // along the bottom edge
                 {
-                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.White && BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.White))
                         vertical = false;
                     else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red)
                         vertical = true;
                     else
-                        vertical = true;
+                        if (rnd.Next(2) == 0)
+                            vertical = false;
                 }
-                else if (gameSettings.getLastHitY() == 0)
+                else if (gameSettings.getLastHitY() == 0) // along the left edge
                 {
-                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.White)
                         vertical = false;
-                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red)
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red || (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.White && BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.White))
                         vertical = true;
                     else
-                        vertical = true;
+                        if (rnd.Next(2) == 0)
+                            vertical = false;
                 }
-                else if (gameSettings.getLastHitY() == 8)
+                else if (gameSettings.getLastHitY() == 8) // along the right edge
                 {
-                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.White)
                         vertical = false;
-                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red)
+                    else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red || (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.White && BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.White))
                         vertical = true;
                     else
-                        vertical = true;
+                        if (rnd.Next(2) == 0)
+                            vertical = false;
                 }
-                else
+                else // anywhere in the middle of the board
                 {
-                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red)
+                    if (BtnPlayer1Grid[gameSettings.getLastHitX() - 1, gameSettings.getLastHitY()].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX() + 1, gameSettings.getLastHitY()].BackColor == Color.Red || (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.White && BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.White))
                         vertical = false;
                     else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red)
                         vertical = true;
                     else
-                        vertical = true;
+                        if(rnd.Next(2) == 0)
+                            vertical = false;
                 }
 
                 int counter = 0;
-                int x = gameSettings.getLastHitX();
-                int y = gameSettings.getLastHitY();
+
+                // depending on the previous code set, vertical will either be true or false indicating where to place the educated guess
                 if (vertical == true)
                 {
-                    //for loop until white or end reached
-                    if (gameSettings.getLastHitY() == 0)
+                    
+                    if (gameSettings.getLastHitY() == 0) // vertical placement only depends on the Y value so that is the one being checked and if 0 then it is at the top of the board
                     {
                         for (int i = 1; i < 5; i++)
                         {
@@ -820,7 +828,7 @@ namespace GridGame
                                 break;
                         }
                     }
-                    else if (gameSettings.getLastHitY() == 8)
+                    else if (gameSettings.getLastHitY() == 8) // checked if 8 then the last hit ship will be at the bottom of the board
                     {
                         for (int i = 1; i < 5; i++)
                         {
@@ -835,11 +843,11 @@ namespace GridGame
                                 break;
                         }
                     }
-                    else
+                    else // if not at bottom or top of the board then check both directions (up and down) from the last hit ship and check if its already white or red so that it either keeps going if red or stops if white
                     {
-                        for (int i = 1; i < 5; i++)
+                        for (int i = 1; i < 5; i++) // only for loops 4 times as the longest ship is 5 long so there is no point to keep going.
                         {
-                            if (gameSettings.getLastHitY() + i < 9)
+                            if (gameSettings.getLastHitY() + i < 9) // this checks downwards
                             {
                                 if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + i].BackColor == Color.Gray || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + i].BackColor == Color.PowderBlue)
                                 {
@@ -854,7 +862,7 @@ namespace GridGame
                         }
                         for (int i = 1; i < 5; i++)
                         {
-                            if (gameSettings.getLastHitY() - i > -1)
+                            if (gameSettings.getLastHitY() - i > -1) // this checks upwards
                             {
                                 if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - i].BackColor == Color.Gray || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - i].BackColor == Color.PowderBlue)
                                 {
@@ -870,7 +878,7 @@ namespace GridGame
                     }
 
                 }
-                else
+                else // this is the code for horizontal placement and does the same thing as vertical except with the x axis
                 {
                     if (gameSettings.getLastHitX() == 0)
                     {
@@ -937,18 +945,20 @@ namespace GridGame
                     }
                 }
 
+                // if counter is 0 after all checks then that means the ship mustve been destroyed meaning there was no logical guess other than a random one
                 if (counter == 0)
                 {
-                    gameSettings.setLastHitX(-1);
+                    //resets the last hit co-ordinates as they are not needed anymore
+                    gameSettings.setLastHitX(-1); 
                     gameSettings.setLastHitY(-1);
-                    guess = true;
+                    guess = true; // set guess to true so that it does a random guess
                 }
-                else
+                else // if counter is not 0 then it will place the guess at the position that was calculated to be the best from the previous code section
                 {
-                    if(gameSettings.getBoard1CellState(tempX, tempY) == true)
+                    if(gameSettings.getBoard1CellState(tempX, tempY) == true) //if that educated guess was a hit then turn the button red
                     {
                         BtnPlayer1Grid[tempX, tempY].BackColor = Color.Red;
-                        gameSettings.setScore2(gameSettings.getScore2() + 1);
+                        gameSettings.setScore2(gameSettings.getScore2() + 1); // add one to score label
                         scoreP2.Text = Convert.ToString(gameSettings.getScore2());
                         playMusic(false);
                         musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
@@ -958,7 +968,7 @@ namespace GridGame
                         gameSettings.setLastHitY(tempY);
 
                     }
-                    else
+                    else // if a miss then turn it white
                     {
                         BtnPlayer1Grid[tempX, tempY].BackColor = Color.White;
                     }
@@ -970,16 +980,18 @@ namespace GridGame
 
             }
 
+            // this runs when the randomiser didnt result in an educated guess or the educated guess found no good placement
             if (guess == true)
             {
-                int xval = rnd.Next(9);
+                int xval = rnd.Next(9); // randomises x and y co-ordinates
                 int yval = rnd.Next(9);
-                if (BtnPlayer1Grid[xval, yval].BackColor == Color.Red || BtnPlayer1Grid[xval, yval].BackColor == Color.White)
+                while(BtnPlayer1Grid[xval, yval].BackColor == Color.Red || BtnPlayer1Grid[xval, yval].BackColor == Color.White) // keeps randomising until a button has been chosen that hasnt already been chosen before so no repeats happen
                 {
                     xval = rnd.Next(9);
                     yval = rnd.Next(9);
                 }
-                else if (gameSettings.getBoard1CellState(xval, yval) == true)
+
+                if (gameSettings.getBoard1CellState(xval, yval) == true) // do same as before, put guess at co-ordinates and if hit then button red, if miss then button white
                 {
                     BtnPlayer1Grid[xval, yval].BackColor = Color.Red;
                     gameSettings.setScore2(gameSettings.getScore2() + 1);
