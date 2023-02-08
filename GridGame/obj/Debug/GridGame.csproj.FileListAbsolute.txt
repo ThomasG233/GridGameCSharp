@@ -9,15 +9,6 @@ C:\Users\kaste\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.Ge
 C:\Users\kaste\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
 C:\Users\kaste\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.exe
 C:\Users\kaste\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.pdb
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\bin\Debug\GridGame.exe.config
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\bin\Debug\GridGame.exe
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\bin\Debug\GridGame.pdb
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.csproj.AssemblyReference.cache
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.Properties.Resources.resources
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.csproj.GenerateResource.cache
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.exe
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.pdb
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\bin\Debug\GridGame.exe.config
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\bin\Debug\GridGame.exe
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\bin\Debug\GridGame.pdb
@@ -29,14 +20,45 @@ C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.Ge
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.exe
 C:\Users\ollyj\Source\Repos\GridGameCSharp\GridGame\obj\Debug\GridGame.pdb
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.csproj.AssemblyReference.cache
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.Properties.Resources.resources
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.csproj.GenerateResource.cache
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.exe
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.pdb
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\obj\Debug\GridGame.GameSettings.resources
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\bin\Debug\GridGame.exe.config
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\bin\Debug\GridGame.exe
-C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGameNewVer\bin\Debug\GridGame.pdb
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection\GridGameCSharp-shipSelection\GridGame\bin\Debug\GridGame.exe.config
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection\GridGameCSharp-shipSelection\GridGame\bin\Debug\GridGame.exe
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection\GridGameCSharp-shipSelection\GridGame\bin\Debug\GridGame.pdb
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.csproj.AssemblyReference.cache
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.Form1.resources
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.Properties.Resources.resources
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.csproj.GenerateResource.cache
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.exe
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.pdb
+U:\C# Programming\GridGame\bin\Debug\GridGame.exe.config
+U:\C# Programming\GridGame\bin\Debug\GridGame.exe
+U:\C# Programming\GridGame\bin\Debug\GridGame.pdb
+U:\C# Programming\GridGame\obj\Debug\GridGame.csproj.AssemblyReference.cache
+U:\C# Programming\GridGame\obj\Debug\GridGame.csproj.SuggestedBindingRedirects.cache
+U:\C# Programming\GridGame\obj\Debug\GridGame.Form1.resources
+U:\C# Programming\GridGame\obj\Debug\GridGame.Properties.Resources.resources
+U:\C# Programming\GridGame\obj\Debug\GridGame.csproj.GenerateResource.cache
+U:\C# Programming\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
+U:\C# Programming\GridGame\obj\Debug\GridGame.exe
+U:\C# Programming\GridGame\obj\Debug\GridGame.pdb
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\bin\Debug\GridGame.exe.config
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\bin\Debug\GridGame.exe
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\bin\Debug\GridGame.pdb
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.csproj.AssemblyReference.cache
 C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.Form1.resources
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.Properties.Resources.resources
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.csproj.GenerateResource.cache
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.exe
+C:\Users\thoma\Desktop\University Work\Year 2\Computer Systems 2B\GridGame\obj\Debug\GridGame.pdb
+U:\AC22005\CSharpGridGame\GridGame\bin\Debug\GridGame.exe.config
+U:\AC22005\CSharpGridGame\GridGame\bin\Debug\GridGame.exe
+U:\AC22005\CSharpGridGame\GridGame\bin\Debug\GridGame.pdb
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.csproj.AssemblyReference.cache
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.csproj.SuggestedBindingRedirects.cache
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.Form1.resources
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.Properties.Resources.resources
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.csproj.GenerateResource.cache
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.exe
+U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.pdb
