@@ -15,6 +15,10 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using System.Deployment.Application;
 
+using Button = System.Windows.Forms.Button;
+using TextBox = System.Windows.Forms.TextBox;
+using System.IO;
+
 namespace GridGame
 {
     public partial class Form1 : Form
@@ -32,6 +36,22 @@ namespace GridGame
             private bool ai = false;
             private int score1 = 0, score2 = 0;
             private int lastHitX = -1, lastHitY = -1;
+            private string playerName = "";
+            private int totalTurns = 0;
+            public void incrementTurns()
+            {
+                totalTurns++;
+            }
+
+            public void resetTurns()
+            {
+                totalTurns = 0;
+            }
+
+            public void setPlayerName(string name)
+            {
+                playerName = name;
+            }
 
             public void setDifficulty(int diff)
             {
@@ -62,6 +82,16 @@ namespace GridGame
             public void setScore2(int score)
             {
                 score2 = score;
+            }
+
+            public int getTurns()
+            {
+                return totalTurns;
+            }
+
+            public string getPlayerName()
+            {
+                return playerName;
             }
 
             public int getDifficulty()
@@ -154,8 +184,8 @@ namespace GridGame
         Label lblPlayerTurn = new Label();
         TextBox scoreP1 = new TextBox();
         TextBox scoreP2 = new TextBox();
+        TextBox pName = new TextBox();
 
-        
         //sound and music control lines of code
         bool sound = true;
         SoundPlayer explosion = new SoundPlayer(@"../../explosion.wav");
@@ -646,6 +676,7 @@ namespace GridGame
 
                     CheckWin();
                     counterSet();
+                    gameSettings.incrementTurns();
                     gameSettings.setPlayer1Turn(false);
                     lblPlayerTurn.Text = "Player 2's Turn";
                     AIPlacement();
@@ -1335,14 +1366,18 @@ namespace GridGame
         {
             Button btnStart = new Button();
             Button btnRules = new Button();
-            
-            btnStart.SetBounds(this.ClientSize.Width / 2 - 50, this.ClientSize.Height / 2, 100, 50);
-            btnRules.SetBounds(this.ClientSize.Width / 2 - 50, this.ClientSize.Height / 2 + 75, 100, 50);
+            Button btnScores = new Button();
+
+            btnStart.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 - 25, 150, 50);
+            btnRules.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 50, 150, 50);
+            btnScores.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 125, 150, 50);
 
             btnStart.Font = menuFont;
             btnRules.Font = menuFont;
+            btnScores.Font = menuFont;
             btnStart.Text = "Start";
             btnRules.Text = "Rules";
+            btnScores.Text = "Highscores";
 
             PictureBox boat = new PictureBox();
             boat.ImageLocation = "../../Battleship.png";
@@ -1351,9 +1386,11 @@ namespace GridGame
 
             btnStart.Click += new EventHandler(this.btnStartEvent_Click);
             btnRules.Click += new EventHandler(this.btnRulesEvent_Click);
+            btnScores.Click += new EventHandler(this.btnHighscoresEvent_Click);
 
             Controls.Add(btnStart);
             Controls.Add(btnRules);
+            Controls.Add(btnScores);
             Controls.Add(boat);
         }
 
@@ -1711,20 +1748,22 @@ namespace GridGame
             Close();
         }
 
-        //checks to see if either player has destroyed all 5 ships then runs endgame()
+        //checks to see if either player has destroyed all 5 ships then runs entername() which runs into endgame()
         void CheckWin()
         {
             if(scoreP1.Text == Convert.ToString(17) || scoreP2.Text == Convert.ToString(17))
             {
                 System.Threading.Thread.Sleep(1000);
                 t.Enabled = false;
-                endgame();
+                enterName();
             }
         }
 
         // Is ran when someone has won the game and heads over to the new endgame screen which shows the user(s) who won and allows them to either play again or go back to menu
         void endgame()
         {
+            clearForm();
+
             Label lblWinner = new Label();
             Button btnPlayAgain = new Button();
             Button btnMainMenu = new Button();
@@ -1733,7 +1772,7 @@ namespace GridGame
             btnPlayAgain.Text = "Play Again";
             btnMainMenu.Text = "Main Menu";
 
-            lblWinner.SetBounds(((int)ClientSize.Width / 2) - 180, 100, 400, 100);
+            lblWinner.SetBounds(((int)ClientSize.Width / 2) - 195, 100, 400, 100);
             btnPlayAgain.SetBounds(this.ClientSize.Width / 2 - 112, this.ClientSize.Height / 2, 200, 50);
             btnMainMenu.SetBounds(this.ClientSize.Width / 2 - 112, this.ClientSize.Height / 2 + 75, 200, 50);
 
@@ -1741,20 +1780,65 @@ namespace GridGame
             btnMainMenu.Click += new EventHandler(this.btnRunMenu_Click);
 
             lblWinner.Font = titleFont;
+            lblWinner.TextAlign = ContentAlignment.MiddleCenter;
             btnPlayAgain.Font = menuFont;
             btnMainMenu.Font = menuFont;
 
             if (scoreP1.Text == Convert.ToString(17))
-                lblWinner.Text = "Player 1 Wins!";
+                lblWinner.Text = gameSettings.getPlayerName() + " (P1) wins!";
 
             else
-                lblWinner.Text = "Player 2 Wins!";
+                lblWinner.Text = gameSettings.getPlayerName() + " (P2) wins!";
 
-            clearForm();
+            checkLeaderboard();
+            gameSettings.setScore1(0);
+            gameSettings.setScore2(0);
 
             Controls.Add(lblWinner);
             Controls.Add(btnPlayAgain);
             Controls.Add(btnMainMenu);
+        }
+
+        // enters name after game ends for submission to leaderboard
+        private void enterName()
+        {
+            clearForm();
+
+            Label lbl = new Label();
+            Button btnSubmit = new Button();
+            pName.MaxLength = 10;
+
+            lbl.Font = menuFont;
+            if (scoreP1.Text == Convert.ToString(17))
+                lbl.Text = "Enter Player 1's name (10 char max): ";
+
+            else
+                lbl.Text = "Enter Player 2's name (10 char max): ";
+            lbl.SetBounds(this.ClientSize.Width / 2 - 200, this.ClientSize.Height / 2 - 75, 450, 50);
+            pName.Font = menuFont;
+            pName.SetBounds(this.ClientSize.Width / 2 - 100, this.ClientSize.Height / 2, 150, 50);
+            btnSubmit.Font = menuFont;
+            btnSubmit.Text = "Submit";
+            btnSubmit.SetBounds(this.ClientSize.Width / 2 - 100, this.ClientSize.Height / 2 + 75, 150, 50);
+            btnSubmit.Click += new EventHandler(btnEnterNameEvent_Click);
+
+            Controls.Add(lbl);
+            Controls.Add(pName);
+            Controls.Add(btnSubmit);
+        }
+
+        void btnEnterNameEvent_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(pName.Text))
+            {
+                MessageBox.Show("Please enter a name.");
+                enterName();
+            }
+            else
+            {
+                gameSettings.setPlayerName(pName.Text);
+                endgame();
+            }
         }
 
         //function to run the menu function cause that function isnt an button event function so cant be called directly
@@ -1792,6 +1876,109 @@ namespace GridGame
         {
             ((Timer)sender).Stop();
             playMusic(true);
+        }
+
+        private void btnHighscoresEvent_Click(object sender, EventArgs e)
+        {
+            clearForm();
+
+            Label title = new Label();
+            Label[] scores = new Label[3];
+            Button btnHome = new Button();
+
+            title.Text = "Games with Least Amount of Turns To Win";
+            title.Font = menuFont;
+            title.SetBounds(this.ClientSize.Width / 2 - 193, 75, 450, 50);
+
+            string[] text = readFile();
+            string[] names = new string[3];
+            string[] turns = new string[3];
+
+            // parse leaderboard text file
+            if (text.Length >= 3)
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    string[] split = text[i].Split(',');
+                    names[i] = split[0];
+                    turns[i] = split[1];
+                }
+            }
+            else
+            {
+                for (int i = 0; i < text.Length - 1; i++)
+                {
+                    string[] split = text[i].Split(',');
+                    names[i] = split[0];
+                    turns[i] = split[1];
+                }
+            }
+
+            // configuring labels to match leaderboard information
+            for (int i = 0; i < scores.Length; i++)
+            {
+                scores[i] = new Label();
+                scores[i].Font = menuFont;
+                scores[i].Text = (i + 1) + ". " + names[i] + " : " + turns[i];
+                scores[i].SetBounds(this.ClientSize.Width / 2 - 50, (this.ClientSize.Height / 2 - 75) + (50 * i), 200, 50);
+                Controls.Add(scores[i]);
+            }
+
+            btnHome.Font = menuFont;
+            btnHome.Text = "Main Menu";
+            btnHome.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 125, 150, 50);
+            btnHome.Click += new EventHandler(btnRunMenu_Click);
+            Controls.Add(title);
+            Controls.Add(btnHome);
+        }
+
+        // check if new score is valid to be written to the leaderboard file
+        // scores are added, then sorted then last score is removed from leaderboard
+        private void checkLeaderboard()
+        {
+            string[] text = readFile();
+            List<Tuple<string, int>> list = new List<Tuple<string, int>>();
+            list.Add(Tuple.Create(gameSettings.getPlayerName(), gameSettings.getTurns()));
+
+            // parse and add names and scores to string array
+            for (int i = 0; i < text.Length; i++)
+            {
+                string[] split = text[i].Split(',');
+                list.Add(Tuple.Create(split[0], int.Parse(split[1])));
+            }
+
+            // sort the scores in ascending order, then clear fourth element
+            list.Sort((a, b) => a.Item2.CompareTo(b.Item2));
+            if (list.Count > 3)
+                list.RemoveAt(list.Count - 1);
+
+            // write sorted leaderboard to file
+            using (StreamWriter sw = new StreamWriter(@"../../leaderboard.txt"))
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    sw.WriteLine(list[i].Item1 + "," + Convert.ToString(list[i].Item2));
+                }
+            }
+            pName.Text = null;
+            gameSettings.resetTurns();
+            gameSettings.setPlayerName(null);
+        }
+
+        private string[] readFile()
+        {
+            string path = @"../../leaderboard.txt";
+            if (System.IO.File.Exists(path))
+            {
+                {
+                    string[] text = System.IO.File.ReadAllLines(path);
+                    return text;
+                }
+            }
+            else
+                using (StreamWriter sw = System.IO.File.CreateText(path)) ;
+
+            return null;
         }
     }
 }
