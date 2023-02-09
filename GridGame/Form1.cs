@@ -23,7 +23,7 @@ namespace GridGame
 {
     public partial class Form1 : Form
     {
-        
+
         /* have put this here as it may come in use later.
         *  idea was hold all needed variables for the gameplay.
         */
@@ -219,7 +219,7 @@ namespace GridGame
         // needed to access code easily on opening the files
         private void Form1_Load(object sender, EventArgs e)
         {
-           
+
         }
         // Ship Selection Screen visuals.
         private void initShipSelect()
@@ -253,7 +253,7 @@ namespace GridGame
                 LblGridTop[x].TextAlign = ContentAlignment.MiddleLeft;
                 LblGridTop[x].Font = new Font(LblGridTop[x].Font, FontStyle.Bold);
                 LblGridTop[x].SetBounds((int)((this.ClientSize.Width / 3.35555) + (40 * x)) + 15, ((int)(this.ClientSize.Height / 9)) - 15, 12, 15);
-                
+
                 LblGridSide[x] = new Label();
                 LblGridSide[x].SetBounds((int)(this.ClientSize.Width / 3.35555) - 15, ((int)(this.ClientSize.Height / 9)) + (40 * x) + 14, 10, 15);
                 LblGridSide[x].Text = Convert.ToString(x + 1);
@@ -270,11 +270,19 @@ namespace GridGame
 
                     BtnPlayer1Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.33333) + (40 * x), ((int)(this.ClientSize.Height / 9)) + (40 * y), 40, 40);
                     BtnPlayer1Grid[x, y].BackColor = Color.PowderBlue;
+                    BtnPlayer2Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.33333) + (40 * x), ((int)(this.ClientSize.Height / 9)) + (40 * y), 40, 40);
                     BtnPlayer2Grid[x, y].BackColor = Color.PowderBlue;
 
                     BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnPlayer1GridEvent_Click);
+                    BtnPlayer2Grid[x, y].Click += new EventHandler(this.BtnPlayer1GridEvent_Click);
 
-                    Controls.Add(BtnPlayer1Grid[x, y]);
+
+                    if (gameSettings.getPlayer1Turn())
+                        Controls.Add(BtnPlayer1Grid[x, y]);
+                    else if (!gameSettings.getPlayer1Turn() && gameSettings.getDifficulty() == 3)
+                    {
+                        Controls.Add(BtnPlayer2Grid[x, y]);
+                    }
                 }
             }
             Controls.Add(LblInstructions);
@@ -610,7 +618,7 @@ namespace GridGame
                 }
                 if (shipSize == 3 && !firstThirdAdded)
                 {
-                   firstThirdAdded = true;
+                    firstThirdAdded = true;
                 }
                 else
                 {
@@ -624,7 +632,7 @@ namespace GridGame
         {
             // Checks to see if the ship has already been placed in cell.
             if (((Button)sender).BackColor != Color.Gray)
-            {  
+            {
                 // Places ship within cell of grid.
                 ((Button)sender).BackColor = Color.Gray;
             }
@@ -679,7 +687,8 @@ namespace GridGame
                     gameSettings.incrementTurns();
                     gameSettings.setPlayer1Turn(false);
                     lblPlayerTurn.Text = "Player 2's Turn";
-                    AIPlacement();
+                    if (gameSettings.getAI())
+                        AIPlacement();
                 }
             }
             else // start of player 2's turn but if it is against an AI then this doesn't run as there is not real second player
@@ -737,7 +746,7 @@ namespace GridGame
                     guess = false;
                 else if (gameSettings.getDifficulty() == 1 && (z == 2 || z == 3)) //50% chance of making an educated guess
                     guess = false;
-                else if(gameSettings.getDifficulty() == 2) //Always makes an educated guess as its meant to be hard
+                else if (gameSettings.getDifficulty() == 2) //Always makes an educated guess as its meant to be hard
                     guess = false;
             }
 
@@ -755,7 +764,7 @@ namespace GridGame
                         vertical = true;
                     else
                         if (rnd.Next(2) == 0) // randomise whether the placement will be vertical or horizontal if no clear option 
-                            vertical = false;
+                        vertical = false;
                 }
                 else if (gameSettings.getLastHitX() == 0 && gameSettings.getLastHitY() == 8) // bottom left corner
                 {
@@ -765,7 +774,7 @@ namespace GridGame
                         vertical = true;
                     else
                         if (rnd.Next(2) == 0)
-                            vertical = false;
+                        vertical = false;
                 }
                 else if (gameSettings.getLastHitX() == 8 && gameSettings.getLastHitY() == 0) // top right corner
                 {
@@ -775,7 +784,7 @@ namespace GridGame
                         vertical = true;
                     else
                         if (rnd.Next(2) == 0)
-                            vertical = false;
+                        vertical = false;
                 }
                 else if (gameSettings.getLastHitX() == 8 && gameSettings.getLastHitY() == 8) // bottom right corner
                 {
@@ -785,7 +794,7 @@ namespace GridGame
                         vertical = true;
                     else
                         if (rnd.Next(2) == 0)
-                            vertical = false;
+                        vertical = false;
                 }
                 else if (gameSettings.getLastHitX() == 0) // along the top edge
                 {
@@ -795,7 +804,7 @@ namespace GridGame
                         vertical = true;
                     else
                         if (rnd.Next(2) == 0)
-                            vertical = false;
+                        vertical = false;
                 }
                 else if (gameSettings.getLastHitX() == 8) // along the bottom edge
                 {
@@ -805,7 +814,7 @@ namespace GridGame
                         vertical = true;
                     else
                         if (rnd.Next(2) == 0)
-                            vertical = false;
+                        vertical = false;
                 }
                 else if (gameSettings.getLastHitY() == 0) // along the left edge
                 {
@@ -815,7 +824,7 @@ namespace GridGame
                         vertical = true;
                     else
                         if (rnd.Next(2) == 0)
-                            vertical = false;
+                        vertical = false;
                 }
                 else if (gameSettings.getLastHitY() == 8) // along the right edge
                 {
@@ -825,7 +834,7 @@ namespace GridGame
                         vertical = true;
                     else
                         if (rnd.Next(2) == 0)
-                            vertical = false;
+                        vertical = false;
                 }
                 else // anywhere in the middle of the board
                 {
@@ -834,8 +843,8 @@ namespace GridGame
                     else if (BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() - 1].BackColor == Color.Red || BtnPlayer1Grid[gameSettings.getLastHitX(), gameSettings.getLastHitY() + 1].BackColor == Color.Red)
                         vertical = true;
                     else
-                        if(rnd.Next(2) == 0)
-                            vertical = false;
+                        if (rnd.Next(2) == 0)
+                        vertical = false;
                 }
 
                 int counter = 0;
@@ -843,7 +852,7 @@ namespace GridGame
                 // depending on the previous code set, vertical will either be true or false indicating where to place the educated guess
                 if (vertical == true)
                 {
-                    
+
                     if (gameSettings.getLastHitY() == 0) // vertical placement only depends on the Y value so that is the one being checked and if 0 then it is at the top of the board
                     {
                         for (int i = 1; i < 5; i++)
@@ -980,13 +989,13 @@ namespace GridGame
                 if (counter == 0)
                 {
                     //resets the last hit co-ordinates as they are not needed anymore
-                    gameSettings.setLastHitX(-1); 
+                    gameSettings.setLastHitX(-1);
                     gameSettings.setLastHitY(-1);
                     guess = true; // set guess to true so that it does a random guess
                 }
                 else // if counter is not 0 then it will place the guess at the position that was calculated to be the best from the previous code section
                 {
-                    if(gameSettings.getBoard1CellState(tempX, tempY) == true) //if that educated guess was a hit then turn the button red
+                    if (gameSettings.getBoard1CellState(tempX, tempY) == true) //if that educated guess was a hit then turn the button red
                     {
                         BtnPlayer1Grid[tempX, tempY].BackColor = Color.Red;
                         gameSettings.setScore2(gameSettings.getScore2() + 1); // add one to score label
@@ -1016,7 +1025,7 @@ namespace GridGame
             {
                 int xval = rnd.Next(9); // randomises x and y co-ordinates
                 int yval = rnd.Next(9);
-                while(BtnPlayer1Grid[xval, yval].BackColor == Color.Red || BtnPlayer1Grid[xval, yval].BackColor == Color.White) // keeps randomising until a button has been chosen that hasnt already been chosen before so no repeats happen
+                while (BtnPlayer1Grid[xval, yval].BackColor == Color.Red || BtnPlayer1Grid[xval, yval].BackColor == Color.White) // keeps randomising until a button has been chosen that hasnt already been chosen before so no repeats happen
                 {
                     xval = rnd.Next(9);
                     yval = rnd.Next(9);
@@ -1052,9 +1061,29 @@ namespace GridGame
             // Check if the selections made are valid.
             if (isSelectionValid())
             {
+                bool startGame = false;
                 clearForm();
-                playGame();
-                randomiseSelection();
+
+                if (gameSettings.getDifficulty() == 3 && gameSettings.getPlayer1Turn())
+                {
+                    gameSettings.setPlayer1Turn(false);
+                    initShipSelect();
+                }
+                else if (gameSettings.getDifficulty() == 3 && !gameSettings.getPlayer1Turn())
+                {
+                    gameSettings.setPlayer1Turn(true);
+                    startGame = true;
+                }
+
+                if (gameSettings.getDifficulty() != 3) //AI
+                {
+                    playGame();
+                    randomiseSelection();
+                }
+                else if (startGame)//player vs player
+                {
+                    playGame();
+                }
             }
         }
 
@@ -1063,17 +1092,35 @@ namespace GridGame
         {
             int numberOfShipGrids = 0;
             // Count all of the number of grid cells selected.
-            for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
+            if (gameSettings.getPlayer1Turn())
             {
-                for (int y = 0; y < BtnPlayer1Grid.GetLength(0); y++)
+                for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
                 {
-                    Debug.WriteLine(Convert.ToString(x) + " " + Convert.ToString(y) + ": " +  BtnPlayer1Grid[x, y].BackColor);
-                    if (BtnPlayer1Grid[x, y].BackColor == Color.Gray)
+                    for (int y = 0; y < BtnPlayer1Grid.GetLength(0); y++)
                     {
-                        numberOfShipGrids++;
+                        Debug.WriteLine(Convert.ToString(x) + " " + Convert.ToString(y) + ": " + BtnPlayer1Grid[x, y].BackColor);
+                        if (BtnPlayer1Grid[x, y].BackColor == Color.Gray)
+                        {
+                            numberOfShipGrids++;
+                        }
                     }
                 }
             }
+            if (!gameSettings.getPlayer1Turn() && gameSettings.getDifficulty() == 3)
+            {
+                for (int x = 0; x < BtnPlayer2Grid.GetLength(0); x++)
+                {
+                    for (int y = 0; y < BtnPlayer2Grid.GetLength(0); y++)
+                    {
+                        Debug.WriteLine(Convert.ToString(x) + " " + Convert.ToString(y) + ": " + BtnPlayer2Grid[x, y].BackColor);
+                        if (BtnPlayer2Grid[x, y].BackColor == Color.Gray)
+                        {
+                            numberOfShipGrids++;
+                        }
+                    }
+                }
+            }
+
             // Minimum number of cells selected needs to be 17.
             if (numberOfShipGrids != 17)
             {
@@ -1083,12 +1130,23 @@ namespace GridGame
 
             bool foundFirstThree = false;
             bool validPlacements = true;
-            for(int i = 5; i > 1; i--)
+            for (int i = 5; i > 1; i--)
             {
-                if(!findShipInSelectionHFirst(i))
+                if (gameSettings.getPlayer1Turn())
                 {
-                    validPlacements = false;
-                    break;
+                    if (!findShipInSelectionHFirst(i))
+                    {
+                        validPlacements = false;
+                        break;
+                    }
+                }
+                else
+                {
+                    if (!findShipInSelectionHFirstPlayer2(i))
+                    {
+                        validPlacements = false;
+                        break;
+                    }
                 }
                 if (i == 3 && !foundFirstThree)
                 {
@@ -1102,10 +1160,21 @@ namespace GridGame
                 validPlacements = true;
                 for (int i = 5; i > 1; i--)
                 {
-                    if (!findShipInSelectionVFirst(i))
+                    if (gameSettings.getPlayer1Turn())
                     {
-                        validPlacements = false;
-                        break;
+                        if (!findShipInSelectionVFirst(i))
+                        {
+                            validPlacements = false;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (!findShipInSelectionVFirstPlayer2(i))
+                        {
+                            validPlacements = false;
+                            break;
+                        }
                     }
                     if (i == 3 && !foundFirstThree)
                     {
@@ -1113,7 +1182,7 @@ namespace GridGame
                         foundFirstThree = true;
                     }
                 }
-                if(!validPlacements)
+                if (!validPlacements)
                 {
                     MessageBox.Show("Your ship placements are not valid, please place your ships horizontally or vertically. The valid ship sizes are: \n\nCarrier (5 boxes), \nBattleship (4 boxes) \nCruiser (3 boxes) \nSubmarine (3 boxes) \nDestroyer (2 boxes)", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return false;
@@ -1239,6 +1308,119 @@ namespace GridGame
             return false;
         }
 
+        bool findShipInSelectionHFirstPlayer2(int amountToFind)
+        {
+            // HORIZONTAL CHECKING
+            // Defines the search space to look for the ships.
+            for (int x = 0; x < gameSettings.getBoard2().GetLength(0) - (amountToFind - 1); x++)
+            {
+                for (int y = 0; y < gameSettings.getBoard2().GetLength(1); y++)
+                {
+                    // Set this to 0 for indexing.
+                    int val = 0;
+                    // Check to see if there exists a ship pattern.
+                    while (val != amountToFind)
+                    {
+                        if (BtnPlayer2Grid[x + val, y].BackColor == Color.Gray)
+                        {
+                            val++;
+                        }
+                        else
+                        {
+                            // forcibly break out of loop.
+                            break;
+                        }
+                    }
+                    // If a ship has been found.
+                    if (val == amountToFind)
+                    {
+                        val = 0;
+                        bool found = false;
+                        // Check to see if this selection encapsulates another.
+                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
+                        while (val < amountToFind)
+                        {
+                            if (gameSettings.getBoard2CellState(x + val, y))
+                            {
+                                found = true;
+                                break;
+                            }
+                            else
+                            {
+                                val++;
+                            }
+                        }
+                        // If the ship doesn't overlap with others in the grid.
+                        if (!found)
+                        {
+                            // Add ship into gameSettings board.
+                            for (int i = 0; i < amountToFind; i++)
+                            {
+                                gameSettings.setBoard2CellState(x + i, y, true);
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            // VERTICAL CHECKING
+            // Defines the search space to look for the ships.
+            for (int x = 0; x < gameSettings.getBoard2().GetLength(0); x++)
+            {
+                for (int y = 0; y < gameSettings.getBoard2().GetLength(1) - (amountToFind - 1); y++)
+                {
+                    // Set this to 0 for indexing.
+                    int val = 0;
+                    // Checks to see if a ship pattern exists on the grid.
+                    while (val < amountToFind)
+                    {
+                        if (BtnPlayer2Grid[x, y + val].BackColor == Color.Gray)
+                        {
+                            val++;
+                        }
+                        else
+                        {
+                            // forcibly break out of loop.
+                            break;
+                        }
+                    }
+                    // If a ship has been found.
+                    if (val == amountToFind)
+                    {
+                        val = 0;
+                        bool found = false;
+                        // Check to see if this selection encapsulates another.
+                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
+                        while (val < amountToFind)
+                        {
+                            if (gameSettings.getBoard2CellState(x, y + val))
+                            {
+                                found = true;
+                                break;
+                            }
+                            else
+                            {
+                                val++;
+                            }
+                        }
+                        // If the ship doesn't overlap with others in the grid.
+                        if (!found)
+                        {
+                            // Add into gameSettings board.
+                            for (int i = 0; i < amountToFind; i++)
+                            {
+                                gameSettings.setBoard2CellState(x, y + i, true);
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
+            gameSettings.clearBoard2();
+            return false;
+        }
+
         bool findShipInSelectionVFirst(int amountToFind)
         {
             // VERTICAL CHECKING
@@ -1361,6 +1543,128 @@ namespace GridGame
             return false;
         }
 
+        bool findShipInSelectionVFirstPlayer2(int amountToFind)
+        {
+            // VERTICAL CHECKING
+            // Defines the search space to look for the ships.
+            for (int x = 0; x < gameSettings.getBoard2().GetLength(0); x++)
+            {
+                for (int y = 0; y < gameSettings.getBoard2().GetLength(1) - (amountToFind - 1); y++)
+                {
+                    // Set this to 0 for indexing.
+                    int val = 0;
+                    // Checks to see if a ship pattern exists on the grid.
+                    while (val < amountToFind)
+                    {
+                        if (BtnPlayer2Grid[x, y + val].BackColor == Color.Gray)
+                        {
+                            val++;
+                        }
+                        else
+                        {
+                            // forcibly break out of loop.
+                            break;
+                        }
+                    }
+                    // If a ship has been found.
+                    if (val == amountToFind)
+                    {
+                        val = 0;
+                        bool found = false;
+                        // Check to see if this selection encapsulates another.
+                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
+                        while (val < amountToFind)
+                        {
+                            if (gameSettings.getBoard2CellState(x, y + val))
+                            {
+                                found = true;
+                                break;
+                            }
+                            else
+                            {
+                                val++;
+                            }
+                        }
+                        // If the ship doesn't overlap with others in the grid.
+                        if (!found)
+                        {
+                            // Add into gameSettings board.
+                            for (int i = 0; i < amountToFind; i++)
+                            {
+                                gameSettings.setBoard2CellState(x, y + i, true);
+                            }
+                            // MessageBox.Show("Found a ship of " + amountToFind + ", added.", "Added successfully");
+                            return true;
+                        }
+                        else
+                        {
+                            // MessageBox.Show("Found a ship of " + amountToFind + " but found previously, not added.", "Not added");
+                        }
+                    }
+                }
+            }
+            // HORIZONTAL CHECKING
+            // Defines the search space to look for the ships.
+            for (int x = 0; x < gameSettings.getBoard2().GetLength(0) - (amountToFind - 1); x++)
+            {
+                for (int y = 0; y < gameSettings.getBoard2().GetLength(1); y++)
+                {
+                    // Set this to 0 for indexing.
+                    int val = 0;
+                    // Check to see if there exists a ship pattern.
+                    while (val != amountToFind)
+                    {
+                        if (BtnPlayer1Grid[x + val, y].BackColor == Color.Gray)
+                        {
+                            val++;
+                        }
+                        else
+                        {
+                            // forcibly break out of loop.
+                            break;
+                        }
+                    }
+                    // If a ship has been found.
+                    if (val == amountToFind)
+                    {
+                        val = 0;
+                        bool found = false;
+                        // Check to see if this selection encapsulates another.
+                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
+                        while (val < amountToFind)
+                        {
+                            if (gameSettings.getBoard2CellState(x + val, y))
+                            {
+                                found = true;
+                                break;
+                            }
+                            else
+                            {
+                                val++;
+                            }
+                        }
+                        // If the ship doesn't overlap with others in the grid.
+                        if (!found)
+                        {
+                            // Add ship into gameSettings board.
+                            for (int i = 0; i < amountToFind; i++)
+                            {
+                                gameSettings.setBoard2CellState(x + i, y, true);
+                            }
+                            // MessageBox.Show("Found a ship of " + amountToFind + ", added.", "Added successfully");
+                            return true;
+                        }
+                        else
+                        {
+                            // MessageBox.Show("Found a ship of " + amountToFind + " but found previously, not added.", "Not added");
+                        }
+                    }
+                }
+            }
+            gameSettings.clearBoard2();
+            return false;
+        }
+
         // Display the main menu
         private void initMenu()
         {
@@ -1437,7 +1741,7 @@ namespace GridGame
                 {
                     continue;
                 }
-                
+
                 Controls.Remove(btn);
             }
             foreach (var lbl in Controls.OfType<Label>().ToList())
@@ -1482,7 +1786,7 @@ namespace GridGame
             {
                 btnSound.FlatAppearance.BorderColor = Color.Red;
             }
-            
+
             Controls.Add(btnSound);
         }
 
@@ -1517,7 +1821,7 @@ namespace GridGame
             this.Menu = strip;
             strip.GetForm().BackColor = Color.LightCyan;
         }
-        
+
         void btnGameStartEvent_Click(object sender, EventArgs e)
         {
             clearForm();
@@ -1588,12 +1892,15 @@ namespace GridGame
                     BtnPlayer2Grid[x, y].SetBounds(((this.ClientSize.Width / 2) + 50) + (31 * y), 349 - (31 * x), 25, 25);
 
                     BtnPlayer1Grid[x, y].Click -= BtnPlayer1GridEvent_Click;
-                    if(gameSettings.getAI() == false)
+                    BtnPlayer2Grid[x, y].Click -= BtnPlayer1GridEvent_Click;
+                    if (gameSettings.getAI() == false)
                         BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnTargetSelectionEvent_Click);
                     BtnPlayer2Grid[x, y].Click += new EventHandler(this.BtnTargetSelectionEvent_Click);
 
                     BtnPlayer1Grid[x, y].Name = "P1" + Convert.ToString(x) + Convert.ToString(y);
                     BtnPlayer2Grid[x, y].Name = "P2" + Convert.ToString(x) + Convert.ToString(y);
+
+                    BtnPlayer2Grid[x, y].BackColor = Color.PowderBlue;
 
                     // labels for scoring and turn identification
                     scoreP1.SetBounds(((this.ClientSize.Width / 2) - 49), 50, 27, 25);
@@ -1662,7 +1969,7 @@ namespace GridGame
             t.Enabled = false;
             lblTimer.Text = Convert.ToString(count);
             count--;
-            
+
             if (count == 0)
             {
                 gameTimerEvent();
@@ -1681,7 +1988,7 @@ namespace GridGame
             {
                 gameSettings.setPlayer1Turn(false);
                 lblPlayerTurn.Text = "Player 2's Turn";
-                if(gameSettings.getAI() == true)
+                if (gameSettings.getAI() == true)
                     AIPlacement();
             }
             else
@@ -1751,7 +2058,7 @@ namespace GridGame
         //checks to see if either player has destroyed all 5 ships then runs entername() which runs into endgame()
         void CheckWin()
         {
-            if(scoreP1.Text == Convert.ToString(17) || scoreP2.Text == Convert.ToString(17))
+            if (scoreP1.Text == Convert.ToString(17) || scoreP2.Text == Convert.ToString(17))
             {
                 System.Threading.Thread.Sleep(1000);
                 t.Enabled = false;
@@ -1772,7 +2079,7 @@ namespace GridGame
             btnPlayAgain.Text = "Play Again";
             btnMainMenu.Text = "Main Menu";
 
-            lblWinner.SetBounds(((int)ClientSize.Width / 2) - 195, 100, 400, 100);
+            lblWinner.SetBounds(((int)ClientSize.Width / 2) - 195, 100, 600, 100);
             btnPlayAgain.SetBounds(this.ClientSize.Width / 2 - 112, this.ClientSize.Height / 2, 200, 50);
             btnMainMenu.SetBounds(this.ClientSize.Width / 2 - 112, this.ClientSize.Height / 2 + 75, 200, 50);
 
@@ -1788,11 +2095,20 @@ namespace GridGame
                 lblWinner.Text = gameSettings.getPlayerName() + " (P1) wins!";
 
             else
-                lblWinner.Text = gameSettings.getPlayerName() + " (P2) wins!";
+            {
+                if (gameSettings.getAI())
+                    lblWinner.SetBounds(((int)ClientSize.Width / 2) - 195, 100, 390, 100);
 
-            checkLeaderboard();
+                lblWinner.Text = gameSettings.getPlayerName() + " (P2) wins!";
+            }
+
+            if (!gameSettings.getAI())
+                checkLeaderboard();
+
             gameSettings.setScore1(0);
             gameSettings.setScore2(0);
+            gameSettings.setPlayer1Turn(true);
+            gameSettings.setAI(false);
 
             Controls.Add(lblWinner);
             Controls.Add(btnPlayAgain);
@@ -1802,6 +2118,12 @@ namespace GridGame
         // enters name after game ends for submission to leaderboard
         private void enterName()
         {
+            if (scoreP2.Text == Convert.ToString(17) && gameSettings.getAI())
+            {
+                endgame();
+                return;
+            }
+
             clearForm();
 
             Label lbl = new Label();
@@ -1811,8 +2133,7 @@ namespace GridGame
             lbl.Font = menuFont;
             if (scoreP1.Text == Convert.ToString(17))
                 lbl.Text = "Enter Player 1's name (10 char max): ";
-
-            else
+            else if (scoreP2.Text == Convert.ToString(17) && !gameSettings.getAI())
                 lbl.Text = "Enter Player 2's name (10 char max): ";
             lbl.SetBounds(this.ClientSize.Width / 2 - 200, this.ClientSize.Height / 2 - 75, 450, 50);
             pName.Font = menuFont;
@@ -1842,7 +2163,7 @@ namespace GridGame
         }
 
         //function to run the menu function cause that function isnt an button event function so cant be called directly
-        void btnRunMenu_Click(object sender , EventArgs e)
+        void btnRunMenu_Click(object sender, EventArgs e)
         {
             clearForm();
             initMenu();
@@ -1860,7 +2181,7 @@ namespace GridGame
         //plays explosion sound when ship is hit
         void playSound()
         {
-            if(sound == true)
+            if (sound == true)
                 explosion.Play();
         }
 

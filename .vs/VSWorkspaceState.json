@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\GridGame"
   ],
-  "SelectedNode": "\\U:\\AC22005\\CSharpGridGame",
+  "SelectedNode": "\\GridGame\\Form1.cs",
   "PreviewInSolutionExplorer": false
 }
