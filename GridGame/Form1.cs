@@ -27,17 +27,84 @@ namespace GridGame
         /* have put this here as it may come in use later.
         *  idea was hold all needed variables for the gameplay.
         */
+
+        class Player
+        {
+            private bool[,] board = new bool[9, 9];
+            private int score = 0;
+
+            public void setBoard(bool[,] board)
+            {
+                this.board = board;
+
+            }
+            public void clearBoard()
+            {
+                for (int x = 0; x < board.GetLength(0); x++)
+                {
+                    for (int y = 0; y < board.GetLength(1); y++)
+                    {
+                        board[x, y] = false;
+                    }
+                }
+            }
+            public bool getBoardCellState(int x, int y)
+            {
+                return board[x, y];
+            }
+            public void setBoardCellState(int x, int y, bool state)
+            {
+                board[x, y] = state;
+            }
+            public void setScore(int score)
+            {
+                this.score = score;
+            }
+            public bool[,] getBoard()
+            {
+                return board;
+            }
+            public int getScore()
+            {
+                return score;
+            }
+
+
+        }
         class GameSettings
         {
-            private int difficulty;
-            private bool[,] board1 = new bool[9, 9];
-            private bool[,] board2 = new bool[9, 9];
+            private Player[] player = new Player[2];
             private bool player1Turn = true;
             private bool ai = false;
-            private int score1 = 0, score2 = 0;
-            private int lastHitX = -1, lastHitY = -1;
-            private string playerName = "";
-            private int totalTurns = 0;
+            private int lastHitX, lastHitY, difficulty, totalTurns, boardLength;
+            private string playerName;
+
+            public GameSettings()
+            {
+                difficulty = 0;
+                player[0] = new Player();
+                player[1] = new Player();
+                player1Turn = true;
+                ai = false;
+                lastHitX = -1;
+                lastHitY = -1;
+                playerName = "";
+                totalTurns = 0;
+                boardLength = 9;
+            }
+            public void setPlayerName(string name)
+            {
+                playerName = name;
+            }
+            public int getBoardLength()
+            {
+                return boardLength;
+            }
+            public Player getPlayer(int playerNumber)
+            {
+                return player[playerNumber];
+            }
+
             public void incrementTurns()
             {
                 totalTurns++;
@@ -48,40 +115,17 @@ namespace GridGame
                 totalTurns = 0;
             }
 
-            public void setPlayerName(string name)
-            {
-                playerName = name;
-            }
-
             public void setDifficulty(int diff)
             {
                 difficulty = diff;
             }
-            public void setAI(bool AI)
+            public void setAI(bool ai)
             {
-                ai = AI;
-            }
-            public void setBoard1(bool[,] board1)
-            {
-                this.board1 = board1;
-            }
-            public void setBoard2(bool[,] board2)
-            {
-                this.board2 = board2;
+                this.ai = ai;
             }
             public void setPlayer1Turn(bool turn)
             {
                 player1Turn = turn;
-            }
-
-            public void setScore1(int score)
-            {
-                score1 = score;
-            }
-
-            public void setScore2(int score)
-            {
-                score2 = score;
             }
 
             public int getTurns()
@@ -102,67 +146,22 @@ namespace GridGame
             {
                 return ai;
             }
-            public bool[,] getBoard1()
-            {
-                return board1;
-            }
-            public bool[,] getBoard2()
-            {
-                return board2;
-            }
+            
             public bool getPlayer1Turn()
             {
                 return player1Turn;
             }
-            public bool getBoard1CellState(int x, int y)
+            
+            public void clearBoards()
             {
-                return board1[x, y];
+                player[0].clearBoard();
+                player[1].clearBoard();
             }
-            public bool getBoard2CellState(int x, int y)
-            {
-                return board2[x, y];
-            }
-            public void setBoard1CellState(int x, int y, bool state)
-            {
-                board1[x, y] = state;
-            }
-            public void setBoard2CellState(int x, int y, bool state)
-            {
-                board2[x, y] = state;
-            }
-            public void clearBoard1()
-            {
-                for (int x = 0; x < board1.GetLength(0); x++)
-                {
-                    for (int y = 0; y < board1.GetLength(1); y++)
-                    {
-                        board1[x, y] = false;
-                    }
-                }
-            }
-            public void clearBoard2()
-            {
-                for (int x = 0; x < board2.GetLength(0); x++)
-                {
-                    for (int y = 0; y < board2.GetLength(1); y++)
-                    {
-                        board2[x, y] = false;
-                    }
-                }
-            }
-            public int getScore1()
-            {
-                return score1;
-            }
-
-            public int getScore2()
-            {
-                return score2;
-            }
+            
             public void resetScores()
             {
-                score1 = 0;
-                score2 = 0;
+                player[0].setScore(0);
+                player[1].setScore(0);
             }
 
             public int getLastHitX()
@@ -338,7 +337,7 @@ namespace GridGame
         }
         void randomiseSelection()
         {
-            gameSettings.clearBoard2();
+            gameSettings.getPlayer(1).clearBoard();
             Random random = new Random();
 
             int shipSize = 5;
@@ -359,15 +358,16 @@ namespace GridGame
                     while (!validated)
                     {
                         // Ship can be placed towards right side without going out of bounds
-                        if (rdmX + (shipSize - 1) < gameSettings.getBoard2().GetLength(0))
+                        if (rdmX + (shipSize - 1) < gameSettings.getBoardLength())
                         {
                             bool shipOverlaps = false;
                             // checks if the placement will overlap with an existing ship.
                             for (int x = 0; x < shipSize; x++)
                             {
-                                if (gameSettings.getBoard2CellState(rdmX + x, rdmY))
+                                if (gameSettings.getPlayer(1).getBoardCellState(rdmX + x, rdmY))
                                 {
                                     shipOverlaps = true;
+                                    break;
                                 }
                             }
                             if (shipOverlaps == true)
@@ -387,9 +387,10 @@ namespace GridGame
                                     bool shipCanFit = true;
                                     for (int x = 0; x < shipSize; x++)
                                     {
-                                        if (gameSettings.getBoard2CellState(rdmX + x, y))
+                                        if (gameSettings.getPlayer(1).getBoardCellState(rdmX + x, y))
                                         {
                                             shipCanFit = false;
+                                            break;
                                         }
                                     }
                                     if (shipCanFit)
@@ -407,7 +408,7 @@ namespace GridGame
                                     for (int x = 0; x < shipSize; x++)
                                     {
                                         //BtnPlayer2Grid[rdmX + x, rdmY].BackColor = shipColours[(shipSize - 2)];
-                                        gameSettings.setBoard2CellState(rdmX + x, rdmY, true);
+                                        gameSettings.getPlayer(1).setBoardCellState(rdmX + x, rdmY, true);
                                     }
                                     validated = true;
                                 }
@@ -422,7 +423,7 @@ namespace GridGame
                                 for (int x = 0; x < shipSize; x++)
                                 {
                                     //BtnPlayer2Grid[rdmX + x, rdmY].BackColor = shipColours[(shipSize - 2)];
-                                    gameSettings.setBoard2CellState(rdmX + x, rdmY, true);
+                                    gameSettings.getPlayer(1).setBoardCellState(rdmX + x, rdmY, true);
                                 }
                                 validated = true;
                             }
@@ -434,9 +435,10 @@ namespace GridGame
                             // checks if the placement will overlap with an existing ship.
                             for (int x = 0; x < shipSize; x++)
                             {
-                                if (gameSettings.getBoard2CellState(rdmX - x, rdmY))
+                                if (gameSettings.getPlayer(1).getBoardCellState(rdmX - x, rdmY))
                                 {
                                     shipOverlaps = true;
+                                    break;
                                 }
                             }
                             if (shipOverlaps == true)
@@ -456,9 +458,10 @@ namespace GridGame
                                     bool shipCanFit = true;
                                     for (int x = 0; x < shipSize; x++)
                                     {
-                                        if (gameSettings.getBoard2CellState(rdmX - x, y))
+                                        if (gameSettings.getPlayer(1).getBoardCellState(rdmX - x, y))
                                         {
                                             shipCanFit = false;
+                                            break;
                                         }
                                     }
                                     if (shipCanFit)
@@ -476,7 +479,7 @@ namespace GridGame
                                     for (int x = 0; x < shipSize; x++)
                                     {
                                         //BtnPlayer2Grid[rdmX - x, rdmY].BackColor = shipColours[(shipSize - 2)];
-                                        gameSettings.setBoard2CellState(rdmX - x, rdmY, true);
+                                        gameSettings.getPlayer(1).setBoardCellState(rdmX - x, rdmY, true);
                                     }
                                     validated = true;
                                 }
@@ -491,7 +494,7 @@ namespace GridGame
                                 for (int x = 0; x < shipSize; x++)
                                 {
                                     //BtnPlayer2Grid[rdmX - x, rdmY].BackColor = shipColours[(shipSize - 2)];
-                                    gameSettings.setBoard2CellState(rdmX - x, rdmY, true);
+                                    gameSettings.getPlayer(1).setBoardCellState(rdmX - x, rdmY, true);
                                 }
                                 validated = true;
                             }
@@ -506,12 +509,12 @@ namespace GridGame
                     bool validated = false;
                     while (!validated)
                     {
-                        if (rdmY + (shipSize - 1) < gameSettings.getBoard2().GetLength(1))
+                        if (rdmY + (shipSize - 1) < gameSettings.getBoardLength())
                         {
                             // checks if the placement will overlap with an existing ship.
                             for (int y = 0; y < shipSize; y++)
                             {
-                                if (gameSettings.getBoard2CellState(rdmX, rdmY + y))
+                                if (gameSettings.getPlayer(1).getBoardCellState(rdmX, rdmY + y))
                                 {
                                     shipOverlaps = true;
                                 }
@@ -533,7 +536,7 @@ namespace GridGame
                                     bool shipCanFit = true;
                                     for (int y = 0; y < shipSize; y++)
                                     {
-                                        if (gameSettings.getBoard2CellState(x, rdmY + y))
+                                        if (gameSettings.getPlayer(1).getBoardCellState(x, rdmY + y))
                                         {
                                             shipCanFit = false;
                                         }
@@ -553,7 +556,7 @@ namespace GridGame
                                     for (int y = 0; y < shipSize; y++)
                                     {
                                         //BtnPlayer2Grid[rdmX, rdmY + y].BackColor = shipColours[(shipSize - 2)];
-                                        gameSettings.setBoard2CellState(rdmX, rdmY + y, true);
+                                        gameSettings.getPlayer(1).setBoardCellState(rdmX, rdmY + y, true);
                                     }
                                     validated = true;
                                 }
@@ -568,7 +571,7 @@ namespace GridGame
                                 for (int y = 0; y < shipSize; y++)
                                 {
                                     //BtnPlayer2Grid[rdmX, rdmY + y].BackColor = shipColours[(shipSize - 2)];
-                                    gameSettings.setBoard2CellState(rdmX, rdmY + y, true);
+                                    gameSettings.getPlayer(1).setBoardCellState(rdmX, rdmY + y, true);
                                 }
                                 validated = true;
                             }
@@ -579,7 +582,7 @@ namespace GridGame
                             // checks if the placement will overlap with an existing ship.
                             for (int y = 0; y < shipSize; y++)
                             {
-                                if (gameSettings.getBoard2CellState(rdmX, rdmY - y))
+                                if (gameSettings.getPlayer(1).getBoardCellState(rdmX, rdmY - y))
                                 {
                                     shipOverlaps = true;
                                 }
@@ -601,7 +604,7 @@ namespace GridGame
                                     bool shipCanFit = true;
                                     for (int y = 0; y < shipSize; y++)
                                     {
-                                        if (gameSettings.getBoard2CellState(x, rdmY - y))
+                                        if (gameSettings.getPlayer(1).getBoardCellState(x, rdmY - y))
                                         {
                                             shipCanFit = false;
                                         }
@@ -621,7 +624,7 @@ namespace GridGame
                                     for (int y = 0; y < shipSize; y++)
                                     {
                                         //BtnPlayer2Grid[rdmX, rdmY - y].BackColor = shipColours[(shipSize - 2)];
-                                        gameSettings.setBoard2CellState(rdmX, rdmY - y, true);
+                                        gameSettings.getPlayer(1).setBoardCellState(rdmX, rdmY - y, true);
                                     }
                                     validated = true;
                                 }
@@ -636,7 +639,7 @@ namespace GridGame
                                 for (int y = 0; y < shipSize; y++)
                                 {
                                     //BtnPlayer2Grid[rdmX, rdmY - y].BackColor = shipColours[(shipSize - 2)];
-                                    gameSettings.setBoard2CellState(rdmX, rdmY - y, true);
+                                    gameSettings.getPlayer(1).setBoardCellState(rdmX, rdmY - y, true);
                                 }
                                 validated = true;
                             }
@@ -696,11 +699,11 @@ namespace GridGame
                 }
                 else
                 {
-                    if (gameSettings.getBoard2CellState(x, y) == true) // if chosen button is a hit then turn the button red otherwise turn it white
+                    if (gameSettings.getPlayer(1).getBoardCellState(x, y) == true) // if chosen button is a hit then turn the button red otherwise turn it white
                     {
                         ((Button)sender).BackColor = Color.Red;
-                        gameSettings.setScore1(gameSettings.getScore1() + 1);
-                        scoreP1.Text = Convert.ToString(gameSettings.getScore1());
+                        gameSettings.getPlayer(0).setScore(gameSettings.getPlayer(0).getScore() + 1);
+                        scoreP1.Text = Convert.ToString(gameSettings.getPlayer(0).getScore());
                         playMusic(false);
                         musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
                         musicTimer.Start();
@@ -732,11 +735,11 @@ namespace GridGame
                     }
                     else
                     {
-                        if (gameSettings.getBoard1CellState(x, y) == true) //same as earlier
+                        if (gameSettings.getPlayer(0).getBoardCellState(x, y) == true) //same as earlier
                         {
                             ((Button)sender).BackColor = Color.Red;
-                            gameSettings.setScore2(gameSettings.getScore2() + 1);
-                            scoreP2.Text = Convert.ToString(gameSettings.getScore2());
+                            gameSettings.getPlayer(1).setScore(gameSettings.getPlayer(1).getScore() + 1);
+                            scoreP2.Text = Convert.ToString(gameSettings.getPlayer(1).getScore());
                             playMusic(false);
                             musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
                             musicTimer.Start();
@@ -1022,11 +1025,11 @@ namespace GridGame
                 }
                 else // if counter is not 0 then it will place the guess at the position that was calculated to be the best from the previous code section
                 {
-                    if (gameSettings.getBoard1CellState(tempX, tempY) == true) //if that educated guess was a hit then turn the button red
+                    if (gameSettings.getPlayer(0).getBoardCellState(tempX, tempY) == true) //if that educated guess was a hit then turn the button red
                     {
                         BtnPlayer1Grid[tempX, tempY].BackColor = Color.Red;
-                        gameSettings.setScore2(gameSettings.getScore2() + 1); // add one to score label
-                        scoreP2.Text = Convert.ToString(gameSettings.getScore2());
+                        gameSettings.getPlayer(1).setScore(gameSettings.getPlayer(1).getScore() + 1); // add one to score label
+                        scoreP2.Text = Convert.ToString(gameSettings.getPlayer(1).getScore());
                         playMusic(false);
                         musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
                         musicTimer.Start();
@@ -1058,11 +1061,11 @@ namespace GridGame
                     yval = rnd.Next(9);
                 }
 
-                if (gameSettings.getBoard1CellState(xval, yval) == true) // do same as before, put guess at co-ordinates and if hit then button red, if miss then button white
+                if (gameSettings.getPlayer(0).getBoardCellState(xval, yval) == true) // do same as before, put guess at co-ordinates and if hit then button red, if miss then button white
                 {
                     BtnPlayer1Grid[xval, yval].BackColor = Color.Red;
-                    gameSettings.setScore2(gameSettings.getScore2() + 1);
-                    scoreP2.Text = Convert.ToString(gameSettings.getScore2());
+                    gameSettings.getPlayer(1).setScore(gameSettings.getPlayer(1).getScore() + 1);
+                    scoreP2.Text = Convert.ToString(gameSettings.getPlayer(1).getScore());
                     playMusic(false);
                     musicTimer.Tick += new EventHandler(playMusicEvent_Timer);
                     musicTimer.Start();
@@ -1181,13 +1184,13 @@ namespace GridGame
         // Find the ship on the selection screen and see if the placement is valid.
         bool findShipInSelection(int amountToFind)
         {
-            if(gameSettings.getPlayer1Turn())
+            if (gameSettings.getPlayer1Turn())
             {
                 // HORIZONTAL CHECKING
                 // Defines the search space to look for the ships.
-                for (int x = 0; x < gameSettings.getBoard1().GetLength(0) - (amountToFind - 1); x++)
+                for (int x = 0; x < gameSettings.getBoardLength() - (amountToFind - 1); x++)
                 {
-                    for (int y = 0; y < gameSettings.getBoard1().GetLength(1); y++)
+                    for (int y = 0; y < gameSettings.getBoardLength(); y++)
                     {
                         // Set this to 0 for indexing.
                         int val = 0;
@@ -1291,7 +1294,7 @@ namespace GridGame
                             // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
                             while (val < amountToFind)
                             {
-                                if (gameSettings.getBoard1CellState(x + val, y))
+                                if (gameSettings.getPlayer(0).getBoardCellState(x + val, y))
                                 {
                                     found = true;
                                     break;
@@ -1307,7 +1310,7 @@ namespace GridGame
                                 // Add ship into gameSettings board.
                                 for (int i = 0; i < amountToFind; i++)
                                 {
-                                    gameSettings.setBoard1CellState(x + i, y, true);
+                                    gameSettings.getPlayer(0).setBoardCellState(x + i, y, true);
                                 }
                                 return true;
                             }
@@ -1316,9 +1319,9 @@ namespace GridGame
                 }
                 // VERTICAL CHECKING
                 // Defines the search space to look for the ships.
-                for (int x = 0; x < gameSettings.getBoard1().GetLength(0); x++)
+                for (int x = 0; x < gameSettings.getBoardLength(); x++)
                 {
-                    for (int y = 0; y < gameSettings.getBoard1().GetLength(1) - (amountToFind - 1); y++)
+                    for (int y = 0; y < gameSettings.getBoardLength() - (amountToFind - 1); y++)
                     {
                         // Set this to 0 for indexing.
                         int val = 0;
@@ -1417,7 +1420,7 @@ namespace GridGame
                             // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
                             while (val < amountToFind)
                             {
-                                if (gameSettings.getBoard1CellState(x, y + val))
+                                if (gameSettings.getPlayer(0).getBoardCellState(x, y + val))
                                 {
                                     found = true;
                                     break;
@@ -1433,23 +1436,21 @@ namespace GridGame
                                 // Add into gameSettings board.
                                 for (int i = 0; i < amountToFind; i++)
                                 {
-                                    gameSettings.setBoard1CellState(x, y + i, true);
+                                    gameSettings.getPlayer(0).setBoardCellState(x, y + i, true);
                                 }
                                 return true;
                             }
                         }
                     }
                 }
-                gameSettings.clearBoard1();
-                return false;
             }
             else
             {
-                // HORIZONTAL CHECKING
+                // HORIZONTAL CHECKING FOR PLAYER 2
                 // Defines the search space to look for the ships.
-                for (int x = 0; x < gameSettings.getBoard2().GetLength(0) - (amountToFind - 1); x++)
+                for (int x = 0; x < gameSettings.getBoardLength() - (amountToFind - 1); x++)
                 {
-                    for (int y = 0; y < gameSettings.getBoard2().GetLength(1); y++)
+                    for (int y = 0; y < gameSettings.getBoardLength(); y++)
                     {
                         // Set this to 0 for indexing.
                         int val = 0;
@@ -1553,7 +1554,7 @@ namespace GridGame
                             // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
                             while (val < amountToFind)
                             {
-                                if (gameSettings.getBoard2CellState(x + val, y))
+                                if (gameSettings.getPlayer(1).getBoardCellState(x + val, y))
                                 {
                                     found = true;
                                     break;
@@ -1569,7 +1570,7 @@ namespace GridGame
                                 // Add ship into gameSettings board.
                                 for (int i = 0; i < amountToFind; i++)
                                 {
-                                    gameSettings.setBoard2CellState(x + i, y, true);
+                                    gameSettings.getPlayer(1).setBoardCellState(x + i, y, true);
                                 }
                                 return true;
                             }
@@ -1578,9 +1579,9 @@ namespace GridGame
                 }
                 // VERTICAL CHECKING
                 // Defines the search space to look for the ships.
-                for (int x = 0; x < gameSettings.getBoard2().GetLength(0); x++)
+                for (int x = 0; x < gameSettings.getBoardLength(); x++)
                 {
-                    for (int y = 0; y < gameSettings.getBoard2().GetLength(1) - (amountToFind - 1); y++)
+                    for (int y = 0; y < gameSettings.getBoardLength() - (amountToFind - 1); y++)
                     {
                         // Set this to 0 for indexing.
                         int val = 0;
@@ -1679,7 +1680,7 @@ namespace GridGame
                             // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
                             while (val < amountToFind)
                             {
-                                if (gameSettings.getBoard2CellState(x, y + val))
+                                if (gameSettings.getPlayer(1).getBoardCellState(x, y + val))
                                 {
                                     found = true;
                                     break;
@@ -1695,7 +1696,7 @@ namespace GridGame
                                 // Add into gameSettings board.
                                 for (int i = 0; i < amountToFind; i++)
                                 {
-                                    gameSettings.setBoard2CellState(x, y + i, true);
+                                    gameSettings.getPlayer(1).setBoardCellState(x, y + i, true);
                                 }
                                 return true;
                             }
@@ -1705,11 +1706,11 @@ namespace GridGame
             }
             if (gameSettings.getPlayer1Turn())
             {
-                gameSettings.clearBoard1();
+                gameSettings.getPlayer(0).clearBoard();
             }
             else
             {
-                gameSettings.clearBoard2();
+                gameSettings.getPlayer(1).clearBoard();
             }
             MessageBox.Show("Your ship placements are not valid, please place your ships horizontally or vertically with at least 1 space between them. The valid ship sizes are: \n\nCarrier (5 boxes), \nBattleship (4 boxes) \nCruiser (3 boxes) \nSubmarine (3 boxes) \nDestroyer (2 boxes)", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return false;
@@ -2029,8 +2030,8 @@ namespace GridGame
             scoreP2.ForeColor = Color.Red;
             scoreP1.Font = menuFont;
             scoreP2.Font = menuFont;
-            scoreP1.Text = Convert.ToString(gameSettings.getScore1());
-            scoreP2.Text = Convert.ToString(gameSettings.getScore2());
+            scoreP1.Text = Convert.ToString(gameSettings.getPlayer(0).getScore());
+            scoreP2.Text = Convert.ToString(gameSettings.getPlayer(1).getScore());
             scoreP1.ReadOnly = true;
             scoreP2.ReadOnly = true;
             scoreP1.BorderStyle = BorderStyle.None;
@@ -2155,8 +2156,7 @@ namespace GridGame
         void stripMainMenuEvent_Click(object sender, EventArgs e)
         {
             clearForm();
-            gameSettings.clearBoard1();
-            gameSettings.clearBoard2();
+            gameSettings.clearBoards();
             initMenu();
         }
 
@@ -2216,8 +2216,7 @@ namespace GridGame
             if (!gameSettings.getAI())
                 checkLeaderboard();
 
-            gameSettings.setScore1(0);
-            gameSettings.setScore2(0);
+            gameSettings.resetScores();
             gameSettings.setPlayer1Turn(true);
             gameSettings.setAI(false);
 
@@ -2277,6 +2276,7 @@ namespace GridGame
         void btnRunMenu_Click(object sender, EventArgs e)
         {
             clearForm();
+            gameSettings.clearBoards();
             initMenu();
         }
 
@@ -2284,8 +2284,7 @@ namespace GridGame
         void btnPlayAgain_Click(object sender, EventArgs e)
         {
             clearForm();
-            gameSettings.clearBoard1();
-            gameSettings.clearBoard2();
+            gameSettings.clearBoards();
             difficultyMenu();
         }
 
