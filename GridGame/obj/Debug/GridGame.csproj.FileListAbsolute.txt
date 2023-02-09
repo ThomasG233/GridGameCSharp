@@ -62,3 +62,13 @@ U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.csproj.GenerateResource.ca
 U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
 U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.exe
 U:\AC22005\CSharpGridGame\GridGame\obj\Debug\GridGame.pdb
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection (1)\GridGameCSharp-shipSelection\GridGame\bin\Debug\GridGame.exe.config
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection (1)\GridGameCSharp-shipSelection\GridGame\bin\Debug\GridGame.exe
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection (1)\GridGameCSharp-shipSelection\GridGame\bin\Debug\GridGame.pdb
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection (1)\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.csproj.AssemblyReference.cache
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection (1)\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.Form1.resources
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection (1)\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.Properties.Resources.resources
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection (1)\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.csproj.GenerateResource.cache
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection (1)\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.csproj.CoreCompileInputs.cache
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection (1)\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.exe
+C:\Users\thoma\Downloads\GridGameCSharp-shipSelection (1)\GridGameCSharp-shipSelection\GridGame\obj\Debug\GridGame.pdb

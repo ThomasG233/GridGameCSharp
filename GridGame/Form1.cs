@@ -159,6 +159,11 @@ namespace GridGame
             {
                 return score2;
             }
+            public void resetScores()
+            {
+                score1 = 0;
+                score2 = 0;
+            }
 
             public int getLastHitX()
             {
@@ -191,6 +196,7 @@ namespace GridGame
         SoundPlayer explosion = new SoundPlayer(@"../../explosion.wav");
         SoundPlayer music = new SoundPlayer(@"../../waves.wav");
         Font menuFont = new Font("Times New Roman", 18.0f);
+        Image ocean = Image.FromFile(@"../../ocean.jpg");
         /* Had to make the grids for the selection screen global variables, so that the necessary checks can be performed.
          * i.e. when you confirm your ship placements, isSelectionValid() must be called.
          * you can't really use the button grid as a parameter into the method as they're already placed
@@ -219,11 +225,13 @@ namespace GridGame
         // needed to access code easily on opening the files
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            this.BackgroundImageLayout = ImageLayout.Stretch;
+            this.BackgroundImage = ocean;
         }
         // Ship Selection Screen visuals.
         private void initShipSelect()
         {
+            Panel pnlBackGround = new Panel();
             BtnPlayer1Grid = new Button[9, 9];
             BtnPlayer2Grid = new Button[9, 9];
 
@@ -233,14 +241,28 @@ namespace GridGame
             Label[] LblGridTop = new Label[9];
             Label[] LblGridSide = new Label[9];
 
-            LblInstructions.Text = "Please select your ship locations:";
-            LblInstructions.SetBounds((int)(this.ClientSize.Width / 3.55), 15, 400, 35);
+            pnlBackGround.BorderStyle = BorderStyle.FixedSingle;
+            pnlBackGround.SetBounds((int)(this.ClientSize.Width / 4), 15, (this.ClientSize.Width / 2), this.ClientSize.Height - 30);
+            pnlBackGround.BackColor = Color.LightBlue;
+
+            if (gameSettings.getPlayer1Turn())
+            {
+                LblInstructions.ForeColor = Color.Blue;
+                LblInstructions.Text = "(P1) Please select your ship locations:";
+            }
+            else
+            {
+                LblInstructions.ForeColor = Color.Red;
+                LblInstructions.Text = "(P2) Please select your ship locations:";
+            }
+            LblInstructions.SetBounds((int)(this.ClientSize.Width / 3.45), 25, 400, 35);
             LblInstructions.TextAlign = ContentAlignment.TopCenter;
-            LblInstructions.Font = new Font(menuFont, FontStyle.Underline);
+            LblInstructions.Font = new Font(menuFont, FontStyle.Bold);
+            LblInstructions.BackColor = Color.LightBlue;
 
             char[] letters = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I' };
 
-            BtnConfirm.SetBounds((int)(this.ClientSize.Width / 2) - 60, (int)(this.ClientSize.Height / 1.25), 100, 50);
+            BtnConfirm.SetBounds((int)(this.ClientSize.Width / 2) - 50, (int)(this.ClientSize.Height / 1.2), 100, 50);
             BtnConfirm.Text = "Confirm";
             BtnConfirm.Font = menuFont;
             BtnConfirm.Click += new EventHandler(BtnConfirmEvent_Click);
@@ -252,13 +274,15 @@ namespace GridGame
                 LblGridTop[x].Text = Convert.ToString(letters[x]);
                 LblGridTop[x].TextAlign = ContentAlignment.MiddleLeft;
                 LblGridTop[x].Font = new Font(LblGridTop[x].Font, FontStyle.Bold);
-                LblGridTop[x].SetBounds((int)((this.ClientSize.Width / 3.35555) + (40 * x)) + 15, ((int)(this.ClientSize.Height / 9)) - 15, 12, 15);
+                LblGridTop[x].BackColor = Color.LightBlue;
+                LblGridTop[x].SetBounds((int)((this.ClientSize.Width / 3.25) + (40 * x)) + 15, ((int)(this.ClientSize.Height / 7.33333)) - 15, 12, 15);
 
                 LblGridSide[x] = new Label();
-                LblGridSide[x].SetBounds((int)(this.ClientSize.Width / 3.35555) - 15, ((int)(this.ClientSize.Height / 9)) + (40 * x) + 14, 10, 15);
+                LblGridSide[x].SetBounds((int)(this.ClientSize.Width / 3.25) - 15, ((int)(this.ClientSize.Height / 7.33333)) + (40 * x) + 14, 10, 15);
                 LblGridSide[x].Text = Convert.ToString(x + 1);
                 LblGridSide[x].Font = new Font(LblGridSide[x].Font, FontStyle.Bold);
                 LblGridSide[x].TextAlign = ContentAlignment.MiddleLeft;
+                LblGridSide[x].BackColor = Color.LightBlue;
 
                 Controls.Add(LblGridTop[x]);
                 Controls.Add(LblGridSide[x]);
@@ -268,9 +292,10 @@ namespace GridGame
                     BtnPlayer1Grid[x, y] = new Button();
                     BtnPlayer2Grid[x, y] = new Button();
 
-                    BtnPlayer1Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.33333) + (40 * x), ((int)(this.ClientSize.Height / 9)) + (40 * y), 40, 40);
+                    BtnPlayer1Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.25) + (40 * x), ((int)(this.ClientSize.Height / 7)) + (40 * y), 40, 40);
                     BtnPlayer1Grid[x, y].BackColor = Color.PowderBlue;
-                    BtnPlayer2Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.33333) + (40 * x), ((int)(this.ClientSize.Height / 9)) + (40 * y), 40, 40);
+                    
+                    BtnPlayer2Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.25) + (40 * x), ((int)(this.ClientSize.Height / 7)) + (40 * y), 40, 40);
                     BtnPlayer2Grid[x, y].BackColor = Color.PowderBlue;
 
                     BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnPlayer1GridEvent_Click);
@@ -285,8 +310,10 @@ namespace GridGame
                     }
                 }
             }
+            Controls.Add(pnlBackGround);
             Controls.Add(LblInstructions);
             Controls.Add(BtnConfirm);
+            pnlBackGround.SendToBack();
         }
         // debug for AI ship generation
         void displayDebugScreenForAIShips()
@@ -1132,21 +1159,10 @@ namespace GridGame
             bool validPlacements = true;
             for (int i = 5; i > 1; i--)
             {
-                if (gameSettings.getPlayer1Turn())
+                if (!findShipInSelection(i))
                 {
-                    if (!findShipInSelectionHFirst(i))
-                    {
-                        validPlacements = false;
-                        break;
-                    }
-                }
-                else
-                {
-                    if (!findShipInSelectionHFirstPlayer2(i))
-                    {
-                        validPlacements = false;
-                        break;
-                    }
+                    validPlacements = false;
+                    break;
                 }
                 if (i == 3 && !foundFirstThree)
                 {
@@ -1156,525 +1172,560 @@ namespace GridGame
             }
             if (!validPlacements)
             {
-                foundFirstThree = false;
-                validPlacements = true;
-                for (int i = 5; i > 1; i--)
-                {
-                    if (gameSettings.getPlayer1Turn())
-                    {
-                        if (!findShipInSelectionVFirst(i))
-                        {
-                            validPlacements = false;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if (!findShipInSelectionVFirstPlayer2(i))
-                        {
-                            validPlacements = false;
-                            break;
-                        }
-                    }
-                    if (i == 3 && !foundFirstThree)
-                    {
-                        i++;
-                        foundFirstThree = true;
-                    }
-                }
-                if (!validPlacements)
-                {
-                    MessageBox.Show("Your ship placements are not valid, please place your ships horizontally or vertically. The valid ship sizes are: \n\nCarrier (5 boxes), \nBattleship (4 boxes) \nCruiser (3 boxes) \nSubmarine (3 boxes) \nDestroyer (2 boxes)", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                MessageBox.Show("Your ship placements are not valid, please place your ships horizontally or vertically with at least 1 space between them. The valid ship sizes are: \n\nCarrier (5 boxes), \nBattleship (4 boxes) \nCruiser (3 boxes) \nSubmarine (3 boxes) \nDestroyer (2 boxes)", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
             return true;
         }
 
         // Find the ship on the selection screen and see if the placement is valid.
-        bool findShipInSelectionHFirst(int amountToFind)
+        bool findShipInSelection(int amountToFind)
         {
-            // HORIZONTAL CHECKING
-            // Defines the search space to look for the ships.
-            for (int x = 0; x < gameSettings.getBoard1().GetLength(0) - (amountToFind - 1); x++)
+            if(gameSettings.getPlayer1Turn())
             {
-                for (int y = 0; y < gameSettings.getBoard1().GetLength(1); y++)
+                // HORIZONTAL CHECKING
+                // Defines the search space to look for the ships.
+                for (int x = 0; x < gameSettings.getBoard1().GetLength(0) - (amountToFind - 1); x++)
                 {
-                    // Set this to 0 for indexing.
-                    int val = 0;
-                    // Check to see if there exists a ship pattern.
-                    while (val != amountToFind)
+                    for (int y = 0; y < gameSettings.getBoard1().GetLength(1); y++)
                     {
-                        if (BtnPlayer1Grid[x + val, y].BackColor == Color.Gray)
+                        // Set this to 0 for indexing.
+                        int val = 0;
+                        // Check to see if there exists a ship pattern.
+                        while (val != amountToFind)
                         {
-                            val++;
-                        }
-                        else
-                        {
-                            // forcibly break out of loop.
-                            break;
-                        }
-                    }
-                    // If a ship has been found.
-                    if (val == amountToFind)
-                    {
-                        val = 0;
-                        bool found = false;
-                        // Check to see if this selection encapsulates another.
-                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
-                        while (val < amountToFind)
-                        {
-                            if (gameSettings.getBoard1CellState(x + val, y))
+                            if (y != 0 && y != 8)
                             {
-                                found = true;
-                                break;
+                                // Checks to see if the spaces in, above and around this ship are vacant.
+                                if (BtnPlayer1Grid[x + val, y].BackColor != Color.PowderBlue && BtnPlayer1Grid[x + val, y + 1].BackColor == Color.PowderBlue && BtnPlayer1Grid[x + val, y - 1].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && x != 0)
+                                    {
+                                        if (BtnPlayer1Grid[x - 1, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (x + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer1Grid[x + amountToFind, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
+                            }
+                            else if (y == 0)
+                            {
+                                // Checks to see if the spaces in, and below this ship are vacant.
+                                if (BtnPlayer1Grid[x + val, y].BackColor != Color.PowderBlue && BtnPlayer1Grid[x + val, y + 1].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && x != 0)
+                                    {
+                                        if (BtnPlayer1Grid[x - 1, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (x + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer1Grid[x + amountToFind, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
                             }
                             else
                             {
-                                val++;
+                                // Checks to see if the spaces in, and above this ship are vacant.
+                                if (BtnPlayer1Grid[x + val, y].BackColor != Color.PowderBlue && BtnPlayer1Grid[x + val, y - 1].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && x != 0)
+                                    {
+                                        if (BtnPlayer1Grid[x - 1, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (x + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer1Grid[x + amountToFind, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
                             }
                         }
-                        // If the ship doesn't overlap with others in the grid.
-                        if (!found)
+                        // If a VALID ship has been found.
+                        if (val == amountToFind)
                         {
-                            // Add ship into gameSettings board.
-                            for (int i = 0; i < amountToFind; i++)
+                            val = 0;
+                            bool found = false;
+                            // Check to see if this selection encapsulates another.
+                            // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
+                            while (val < amountToFind)
                             {
-                                gameSettings.setBoard1CellState(x + i, y, true);
+                                if (gameSettings.getBoard1CellState(x + val, y))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    val++;
+                                }
                             }
-                            return true;
+                            // If the ship doesn't overlap with others in the grid.
+                            if (!found)
+                            {
+                                // Add ship into gameSettings board.
+                                for (int i = 0; i < amountToFind; i++)
+                                {
+                                    gameSettings.setBoard1CellState(x + i, y, true);
+                                }
+                                return true;
+                            }
+                        }
+                    }
+                }
+                // VERTICAL CHECKING
+                // Defines the search space to look for the ships.
+                for (int x = 0; x < gameSettings.getBoard1().GetLength(0); x++)
+                {
+                    for (int y = 0; y < gameSettings.getBoard1().GetLength(1) - (amountToFind - 1); y++)
+                    {
+                        // Set this to 0 for indexing.
+                        int val = 0;
+                        // Checks to see if a ship pattern exists on the grid.
+                        while (val < amountToFind)
+                        {
+                            if (x != 0 && x != 8)
+                            {
+                                if (BtnPlayer1Grid[x, y + val].BackColor != Color.PowderBlue && BtnPlayer1Grid[x - 1, y + val].BackColor == Color.PowderBlue && BtnPlayer1Grid[x + 1, y + val].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && y != 0)
+                                    {
+                                        if (BtnPlayer1Grid[x, y - 1].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (y + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer1Grid[x, y + amountToFind].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
+                            }
+                            else if (x == 0)
+                            {
+                                if (BtnPlayer1Grid[x, y + val].BackColor != Color.PowderBlue && BtnPlayer1Grid[x + 1, y + val].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && y != 0)
+                                    {
+                                        if (BtnPlayer1Grid[x, y - 1].BackColor != Color.PowderBlue)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (y + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer1Grid[x, y + amountToFind].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (BtnPlayer1Grid[x, y + val].BackColor != Color.PowderBlue && BtnPlayer1Grid[x - 1, y + val].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && y != 0)
+                                    {
+                                        if (BtnPlayer1Grid[x, y - 1].BackColor != Color.PowderBlue)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (y + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer1Grid[x, y + amountToFind].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
+                            }
+                        }
+                        // If a ship has been found.
+                        if (val == amountToFind)
+                        {
+                            val = 0;
+                            bool found = false;
+                            // Check to see if this selection encapsulates another.
+                            // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
+                            while (val < amountToFind)
+                            {
+                                if (gameSettings.getBoard1CellState(x, y + val))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    val++;
+                                }
+                            }
+                            // If the ship doesn't overlap with others in the grid.
+                            if (!found)
+                            {
+                                // Add into gameSettings board.
+                                for (int i = 0; i < amountToFind; i++)
+                                {
+                                    gameSettings.setBoard1CellState(x, y + i, true);
+                                }
+                                return true;
+                            }
+                        }
+                    }
+                }
+                gameSettings.clearBoard1();
+                return false;
+            }
+            else
+            {
+                // HORIZONTAL CHECKING
+                // Defines the search space to look for the ships.
+                for (int x = 0; x < gameSettings.getBoard2().GetLength(0) - (amountToFind - 1); x++)
+                {
+                    for (int y = 0; y < gameSettings.getBoard2().GetLength(1); y++)
+                    {
+                        // Set this to 0 for indexing.
+                        int val = 0;
+                        // Check to see if there exists a ship pattern.
+                        while (val != amountToFind)
+                        {
+                            if (y != 0 && y != 8)
+                            {
+                                // Checks to see if the spaces in, above and around this ship are vacant.
+                                if (BtnPlayer2Grid[x + val, y].BackColor != Color.PowderBlue && BtnPlayer2Grid[x + val, y + 1].BackColor == Color.PowderBlue && BtnPlayer2Grid[x + val, y - 1].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && x != 0)
+                                    {
+                                        if (BtnPlayer2Grid[x - 1, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (x + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer2Grid[x + amountToFind, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
+                            }
+                            else if (y == 0)
+                            {
+                                // Checks to see if the spaces in, and below this ship are vacant.
+                                if (BtnPlayer2Grid[x + val, y].BackColor != Color.PowderBlue && BtnPlayer2Grid[x + val, y + 1].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && x != 0)
+                                    {
+                                        if (BtnPlayer2Grid[x - 1, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (x + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer2Grid[x + amountToFind, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                // Checks to see if the spaces in, and above this ship are vacant.
+                                if (BtnPlayer2Grid[x + val, y].BackColor != Color.PowderBlue && BtnPlayer2Grid[x + val, y - 1].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && x != 0)
+                                    {
+                                        if (BtnPlayer2Grid[x - 1, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (x + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer2Grid[x + amountToFind, y].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
+                            }
+                        }
+                        // If a VALID ship has been found.
+                        if (val == amountToFind)
+                        {
+                            val = 0;
+                            bool found = false;
+                            // Check to see if this selection encapsulates another.
+                            // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
+                            while (val < amountToFind)
+                            {
+                                if (gameSettings.getBoard2CellState(x + val, y))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    val++;
+                                }
+                            }
+                            // If the ship doesn't overlap with others in the grid.
+                            if (!found)
+                            {
+                                // Add ship into gameSettings board.
+                                for (int i = 0; i < amountToFind; i++)
+                                {
+                                    gameSettings.setBoard2CellState(x + i, y, true);
+                                }
+                                return true;
+                            }
+                        }
+                    }
+                }
+                // VERTICAL CHECKING
+                // Defines the search space to look for the ships.
+                for (int x = 0; x < gameSettings.getBoard2().GetLength(0); x++)
+                {
+                    for (int y = 0; y < gameSettings.getBoard2().GetLength(1) - (amountToFind - 1); y++)
+                    {
+                        // Set this to 0 for indexing.
+                        int val = 0;
+                        // Checks to see if a ship pattern exists on the grid.
+                        while (val < amountToFind)
+                        {
+                            if (x != 0 && x != 8)
+                            {
+                                if (BtnPlayer2Grid[x, y + val].BackColor != Color.PowderBlue && BtnPlayer2Grid[x - 1, y + val].BackColor == Color.PowderBlue && BtnPlayer2Grid[x + 1, y + val].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && y != 0)
+                                    {
+                                        if (BtnPlayer2Grid[x, y - 1].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (y + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer2Grid[x, y + amountToFind].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
+                            }
+                            else if (x == 0)
+                            {
+                                if (BtnPlayer2Grid[x, y + val].BackColor != Color.PowderBlue && BtnPlayer2Grid[x + 1, y + val].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && y != 0)
+                                    {
+                                        if (BtnPlayer2Grid[x, y - 1].BackColor != Color.PowderBlue)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (y + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer2Grid[x, y + amountToFind].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                if (BtnPlayer2Grid[x, y + val].BackColor != Color.PowderBlue && BtnPlayer2Grid[x - 1, y + val].BackColor == Color.PowderBlue)
+                                {
+                                    if (val == 0 && y != 0)
+                                    {
+                                        if (BtnPlayer2Grid[x, y - 1].BackColor != Color.PowderBlue)
+                                        {
+                                            break;
+                                        }
+                                    }
+                                    val++;
+                                    if (y + amountToFind <= 8 && val == amountToFind)
+                                    {
+                                        if (BtnPlayer2Grid[x, y + amountToFind].BackColor != Color.PowderBlue)
+                                        {
+                                            val = 6;
+                                            break;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // forcibly break out of loop.
+                                    break;
+                                }
+                            }
+                        }
+                        // If a ship has been found.
+                        if (val == amountToFind)
+                        {
+                            val = 0;
+                            bool found = false;
+                            // Check to see if this selection encapsulates another.
+                            // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
+                            while (val < amountToFind)
+                            {
+                                if (gameSettings.getBoard2CellState(x, y + val))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    val++;
+                                }
+                            }
+                            // If the ship doesn't overlap with others in the grid.
+                            if (!found)
+                            {
+                                // Add into gameSettings board.
+                                for (int i = 0; i < amountToFind; i++)
+                                {
+                                    gameSettings.setBoard2CellState(x, y + i, true);
+                                }
+                                return true;
+                            }
                         }
                     }
                 }
             }
-            // VERTICAL CHECKING
-            // Defines the search space to look for the ships.
-            for (int x = 0; x < gameSettings.getBoard1().GetLength(0); x++)
+            if (gameSettings.getPlayer1Turn())
             {
-                for (int y = 0; y < gameSettings.getBoard1().GetLength(1) - (amountToFind - 1); y++)
-                {
-                    // Set this to 0 for indexing.
-                    int val = 0;
-                    // Checks to see if a ship pattern exists on the grid.
-                    while (val < amountToFind)
-                    {
-                        if (BtnPlayer1Grid[x, y + val].BackColor == Color.Gray)
-                        {
-                            val++;
-                        }
-                        else
-                        {
-                            // forcibly break out of loop.
-                            break;
-                        }
-                    }
-                    // If a ship has been found.
-                    if (val == amountToFind)
-                    {
-                        val = 0;
-                        bool found = false;
-                        // Check to see if this selection encapsulates another.
-                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
-                        while (val < amountToFind)
-                        {
-                            if (gameSettings.getBoard1CellState(x, y + val))
-                            {
-                                found = true;
-                                break;
-                            }
-                            else
-                            {
-                                val++;
-                            }
-                        }
-                        // If the ship doesn't overlap with others in the grid.
-                        if (!found)
-                        {
-                            // Add into gameSettings board.
-                            for (int i = 0; i < amountToFind; i++)
-                            {
-                                gameSettings.setBoard1CellState(x, y + i, true);
-                            }
-                            return true;
-                        }
-                    }
-                }
+                gameSettings.clearBoard1();
             }
-            gameSettings.clearBoard1();
-            return false;
-        }
-
-        bool findShipInSelectionHFirstPlayer2(int amountToFind)
-        {
-            // HORIZONTAL CHECKING
-            // Defines the search space to look for the ships.
-            for (int x = 0; x < gameSettings.getBoard2().GetLength(0) - (amountToFind - 1); x++)
+            else
             {
-                for (int y = 0; y < gameSettings.getBoard2().GetLength(1); y++)
-                {
-                    // Set this to 0 for indexing.
-                    int val = 0;
-                    // Check to see if there exists a ship pattern.
-                    while (val != amountToFind)
-                    {
-                        if (BtnPlayer2Grid[x + val, y].BackColor == Color.Gray)
-                        {
-                            val++;
-                        }
-                        else
-                        {
-                            // forcibly break out of loop.
-                            break;
-                        }
-                    }
-                    // If a ship has been found.
-                    if (val == amountToFind)
-                    {
-                        val = 0;
-                        bool found = false;
-                        // Check to see if this selection encapsulates another.
-                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
-                        while (val < amountToFind)
-                        {
-                            if (gameSettings.getBoard2CellState(x + val, y))
-                            {
-                                found = true;
-                                break;
-                            }
-                            else
-                            {
-                                val++;
-                            }
-                        }
-                        // If the ship doesn't overlap with others in the grid.
-                        if (!found)
-                        {
-                            // Add ship into gameSettings board.
-                            for (int i = 0; i < amountToFind; i++)
-                            {
-                                gameSettings.setBoard2CellState(x + i, y, true);
-                            }
-                            return true;
-                        }
-                    }
-                }
+                gameSettings.clearBoard2();
             }
-
-            // VERTICAL CHECKING
-            // Defines the search space to look for the ships.
-            for (int x = 0; x < gameSettings.getBoard2().GetLength(0); x++)
-            {
-                for (int y = 0; y < gameSettings.getBoard2().GetLength(1) - (amountToFind - 1); y++)
-                {
-                    // Set this to 0 for indexing.
-                    int val = 0;
-                    // Checks to see if a ship pattern exists on the grid.
-                    while (val < amountToFind)
-                    {
-                        if (BtnPlayer2Grid[x, y + val].BackColor == Color.Gray)
-                        {
-                            val++;
-                        }
-                        else
-                        {
-                            // forcibly break out of loop.
-                            break;
-                        }
-                    }
-                    // If a ship has been found.
-                    if (val == amountToFind)
-                    {
-                        val = 0;
-                        bool found = false;
-                        // Check to see if this selection encapsulates another.
-                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
-                        while (val < amountToFind)
-                        {
-                            if (gameSettings.getBoard2CellState(x, y + val))
-                            {
-                                found = true;
-                                break;
-                            }
-                            else
-                            {
-                                val++;
-                            }
-                        }
-                        // If the ship doesn't overlap with others in the grid.
-                        if (!found)
-                        {
-                            // Add into gameSettings board.
-                            for (int i = 0; i < amountToFind; i++)
-                            {
-                                gameSettings.setBoard2CellState(x, y + i, true);
-                            }
-                            return true;
-                        }
-                    }
-                }
-            }
-            gameSettings.clearBoard2();
-            return false;
-        }
-
-        bool findShipInSelectionVFirst(int amountToFind)
-        {
-            // VERTICAL CHECKING
-            // Defines the search space to look for the ships.
-            for (int x = 0; x < gameSettings.getBoard1().GetLength(0); x++)
-            {
-                for (int y = 0; y < gameSettings.getBoard1().GetLength(1) - (amountToFind - 1); y++)
-                {
-                    // Set this to 0 for indexing.
-                    int val = 0;
-                    // Checks to see if a ship pattern exists on the grid.
-                    while (val < amountToFind)
-                    {
-                        if (BtnPlayer1Grid[x, y + val].BackColor == Color.Gray)
-                        {
-                            val++;
-                        }
-                        else
-                        {
-                            // forcibly break out of loop.
-                            break;
-                        }
-                    }
-                    // If a ship has been found.
-                    if (val == amountToFind)
-                    {
-                        val = 0;
-                        bool found = false;
-                        // Check to see if this selection encapsulates another.
-                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
-                        while (val < amountToFind)
-                        {
-                            if (gameSettings.getBoard1CellState(x, y + val))
-                            {
-                                found = true;
-                                break;
-                            }
-                            else
-                            {
-                                val++;
-                            }
-                        }
-                        // If the ship doesn't overlap with others in the grid.
-                        if (!found)
-                        {
-                            // Add into gameSettings board.
-                            for (int i = 0; i < amountToFind; i++)
-                            {
-                                gameSettings.setBoard1CellState(x, y + i, true);
-                            }
-                            // MessageBox.Show("Found a ship of " + amountToFind + ", added.", "Added successfully");
-                            return true;
-                        }
-                        else
-                        {
-                            // MessageBox.Show("Found a ship of " + amountToFind + " but found previously, not added.", "Not added");
-                        }
-                    }
-                }
-            }
-            // HORIZONTAL CHECKING
-            // Defines the search space to look for the ships.
-            for (int x = 0; x < gameSettings.getBoard1().GetLength(0) - (amountToFind - 1); x++)
-            {
-                for (int y = 0; y < gameSettings.getBoard1().GetLength(1); y++)
-                {
-                    // Set this to 0 for indexing.
-                    int val = 0;
-                    // Check to see if there exists a ship pattern.
-                    while (val != amountToFind)
-                    {
-                        if (BtnPlayer1Grid[x + val, y].BackColor == Color.Gray)
-                        {
-                            val++;
-                        }
-                        else
-                        {
-                            // forcibly break out of loop.
-                            break;
-                        }
-                    }
-                    // If a ship has been found.
-                    if (val == amountToFind)
-                    {
-                        val = 0;
-                        bool found = false;
-                        // Check to see if this selection encapsulates another.
-                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
-                        while (val < amountToFind)
-                        {
-                            if (gameSettings.getBoard1CellState(x + val, y))
-                            {
-                                found = true;
-                                break;
-                            }
-                            else
-                            {
-                                val++;
-                            }
-                        }
-                        // If the ship doesn't overlap with others in the grid.
-                        if (!found)
-                        {
-                            // Add ship into gameSettings board.
-                            for (int i = 0; i < amountToFind; i++)
-                            {
-                                gameSettings.setBoard1CellState(x + i, y, true);
-                            }
-                            // MessageBox.Show("Found a ship of " + amountToFind + ", added.", "Added successfully");
-                            return true;
-                        }
-                        else
-                        {
-                            // MessageBox.Show("Found a ship of " + amountToFind + " but found previously, not added.", "Not added");
-                        }
-                    }
-                }
-            }
-            gameSettings.clearBoard1();
-            return false;
-        }
-
-        bool findShipInSelectionVFirstPlayer2(int amountToFind)
-        {
-            // VERTICAL CHECKING
-            // Defines the search space to look for the ships.
-            for (int x = 0; x < gameSettings.getBoard2().GetLength(0); x++)
-            {
-                for (int y = 0; y < gameSettings.getBoard2().GetLength(1) - (amountToFind - 1); y++)
-                {
-                    // Set this to 0 for indexing.
-                    int val = 0;
-                    // Checks to see if a ship pattern exists on the grid.
-                    while (val < amountToFind)
-                    {
-                        if (BtnPlayer2Grid[x, y + val].BackColor == Color.Gray)
-                        {
-                            val++;
-                        }
-                        else
-                        {
-                            // forcibly break out of loop.
-                            break;
-                        }
-                    }
-                    // If a ship has been found.
-                    if (val == amountToFind)
-                    {
-                        val = 0;
-                        bool found = false;
-                        // Check to see if this selection encapsulates another.
-                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked.
-                        while (val < amountToFind)
-                        {
-                            if (gameSettings.getBoard2CellState(x, y + val))
-                            {
-                                found = true;
-                                break;
-                            }
-                            else
-                            {
-                                val++;
-                            }
-                        }
-                        // If the ship doesn't overlap with others in the grid.
-                        if (!found)
-                        {
-                            // Add into gameSettings board.
-                            for (int i = 0; i < amountToFind; i++)
-                            {
-                                gameSettings.setBoard2CellState(x, y + i, true);
-                            }
-                            // MessageBox.Show("Found a ship of " + amountToFind + ", added.", "Added successfully");
-                            return true;
-                        }
-                        else
-                        {
-                            // MessageBox.Show("Found a ship of " + amountToFind + " but found previously, not added.", "Not added");
-                        }
-                    }
-                }
-            }
-            // HORIZONTAL CHECKING
-            // Defines the search space to look for the ships.
-            for (int x = 0; x < gameSettings.getBoard2().GetLength(0) - (amountToFind - 1); x++)
-            {
-                for (int y = 0; y < gameSettings.getBoard2().GetLength(1); y++)
-                {
-                    // Set this to 0 for indexing.
-                    int val = 0;
-                    // Check to see if there exists a ship pattern.
-                    while (val != amountToFind)
-                    {
-                        if (BtnPlayer1Grid[x + val, y].BackColor == Color.Gray)
-                        {
-                            val++;
-                        }
-                        else
-                        {
-                            // forcibly break out of loop.
-                            break;
-                        }
-                    }
-                    // If a ship has been found.
-                    if (val == amountToFind)
-                    {
-                        val = 0;
-                        bool found = false;
-                        // Check to see if this selection encapsulates another.
-                        // i.e. 4 cells can exist within a 5 cell ship, so this must be checked..
-                        while (val < amountToFind)
-                        {
-                            if (gameSettings.getBoard2CellState(x + val, y))
-                            {
-                                found = true;
-                                break;
-                            }
-                            else
-                            {
-                                val++;
-                            }
-                        }
-                        // If the ship doesn't overlap with others in the grid.
-                        if (!found)
-                        {
-                            // Add ship into gameSettings board.
-                            for (int i = 0; i < amountToFind; i++)
-                            {
-                                gameSettings.setBoard2CellState(x + i, y, true);
-                            }
-                            // MessageBox.Show("Found a ship of " + amountToFind + ", added.", "Added successfully");
-                            return true;
-                        }
-                        else
-                        {
-                            // MessageBox.Show("Found a ship of " + amountToFind + " but found previously, not added.", "Not added");
-                        }
-                    }
-                }
-            }
-            gameSettings.clearBoard2();
+            MessageBox.Show("Your ship placements are not valid, please place your ships horizontally or vertically with at least 1 space between them. The valid ship sizes are: \n\nCarrier (5 boxes), \nBattleship (4 boxes) \nCruiser (3 boxes) \nSubmarine (3 boxes) \nDestroyer (2 boxes)", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return false;
         }
 
         // Display the main menu
         private void initMenu()
         {
+            gameSettings.setPlayer1Turn(true);
             Button btnStart = new Button();
             Button btnRules = new Button();
             Button btnScores = new Button();
 
-            btnStart.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 - 25, 150, 50);
-            btnRules.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 50, 150, 50);
-            btnScores.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 125, 150, 50);
+            btnStart.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 60, 150, 50);
+            btnRules.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 120, 150, 50);
+            btnScores.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 180, 150, 50);
 
             btnStart.Font = menuFont;
             btnRules.Font = menuFont;
@@ -1685,8 +1736,9 @@ namespace GridGame
 
             PictureBox boat = new PictureBox();
             boat.ImageLocation = "../../Battleship.png";
-            boat.Size = new Size(200, 200);
-            boat.Location = new Point(this.ClientSize.Width / 2 - 100, this.ClientSize.Height / 2 - 225);
+            boat.Size = new Size(700, 400);
+            boat.Location = new Point(this.ClientSize.Width / 2 - 230, this.ClientSize.Height / 2 - 230);
+            boat.BackColor = Color.Transparent;
 
             btnStart.Click += new EventHandler(this.btnStartEvent_Click);
             btnRules.Click += new EventHandler(this.btnRulesEvent_Click);
@@ -1708,16 +1760,23 @@ namespace GridGame
                 btns[i].Font = menuFont;
             }
 
-            btns[0].SetBounds(this.ClientSize.Width / 2 - 180, this.ClientSize.Height / 2 - 50, 100, 50);
-            btns[1].SetBounds(this.ClientSize.Width / 2 - 60, this.ClientSize.Height / 2 - 50, 100, 50);
-            btns[2].SetBounds(this.ClientSize.Width / 2 + 60, this.ClientSize.Height / 2 - 50, 100, 50);
+            PictureBox boat = new PictureBox();
+            boat.ImageLocation = "../../Battleship.png";
+            boat.Size = new Size(700, 275);
+            boat.Location = new Point(this.ClientSize.Width / 2 - 230, this.ClientSize.Height / 2 - 230);
+            boat.BackColor = Color.Transparent;
+            Controls.Add(boat);
+
+            btns[0].SetBounds(this.ClientSize.Width / 2 - 160, this.ClientSize.Height / 2 + 50, 100, 50);
+            btns[1].SetBounds(this.ClientSize.Width / 2 - 45, this.ClientSize.Height / 2 + 50, 100, 50);
+            btns[2].SetBounds(this.ClientSize.Width / 2 + 70, this.ClientSize.Height / 2 + 50, 100, 50);
             btns[0].Text = "Easy";
             btns[1].Text = "Normal";
             btns[2].Text = "Hard";
 
             Button btnPlayerVsPlayer = new Button();
             btnPlayerVsPlayer.Font = menuFont;
-            btnPlayerVsPlayer.SetBounds(this.ClientSize.Width / 2 - 112, this.ClientSize.Height / 2 + 25, 200, 50);
+            btnPlayerVsPlayer.SetBounds(this.ClientSize.Width / 2 - 98, this.ClientSize.Height / 2 + 125, 200, 50);
             btnPlayerVsPlayer.Text = "Player vs Player";
 
             for (int i = 0; i < btns.Length; i++)
@@ -1747,6 +1806,10 @@ namespace GridGame
             foreach (var lbl in Controls.OfType<Label>().ToList())
             {
                 Controls.Remove(lbl);
+            }
+            foreach (var pnl in Controls.OfType<Panel>().ToList())
+            {
+                Controls.Remove(pnl);
             }
             foreach (var tBox in Controls.OfType<TextBox>().ToList())
             {
@@ -1860,6 +1923,32 @@ namespace GridGame
             // Check if it is in player vs player mode or player vs AI mode
 
             // layout buttons for the game
+            gameSettings.resetScores();
+
+            Panel pnlTop = new Panel();
+            Panel pnlCentre = new Panel();
+            Panel pnlBottom = new Panel();
+            Panel pnlDivider = new Panel();
+
+            pnlTop.SetBounds((this.ClientSize.Width / 5) - 35, 45, 665, 35);
+            pnlTop.BackColor = Color.LightCyan;
+            pnlTop.BorderStyle = BorderStyle.FixedSingle;
+
+            pnlCentre.SetBounds((this.ClientSize.Width / 5) - 35, 80, 665, 315);
+            pnlCentre.BackColor = Color.LightBlue;
+            pnlCentre.BorderStyle = BorderStyle.FixedSingle;
+
+            pnlBottom.SetBounds((this.ClientSize.Width / 5) - 35, 315 + 80, 665, 40);
+            pnlBottom.BackColor = Color.LightCyan;
+            pnlBottom.BorderStyle = BorderStyle.FixedSingle;
+
+            pnlDivider.SetBounds((this.ClientSize.Width / 2) + 12, 80, 5, 315);
+            pnlDivider.BackColor = Color.Gray;
+
+            Controls.Add(pnlTop);
+            Controls.Add(pnlCentre);
+            Controls.Add(pnlBottom);
+            Controls.Add(pnlDivider);
 
             Label[] LblTop1 = new Label[9];
             Label[] LblTop2 = new Label[9];
@@ -1873,23 +1962,40 @@ namespace GridGame
                 LblTop1[x] = new Label();
                 LblTop1[x].Font = new Font(LblTop1[x].Font, FontStyle.Bold);
                 LblTop1[x].TextAlign = ContentAlignment.MiddleLeft;
-                LblTop1[x].SetBounds((this.ClientSize.Width / 2) - 25, 101 + (31 * x) + 6, 15, 15);
+                LblTop1[x].SetBounds((this.ClientSize.Width / 2) - 25, 106 + (31 * x) + 6, 15, 15);
                 LblTop1[x].Text = Convert.ToString(letters[x]);
+                LblTop1[x].BackColor = Color.LightBlue;
 
                 LblTop2[x] = new Label();
                 LblTop2[x].Font = new Font(LblTop2[x].Font, FontStyle.Bold);
                 LblTop2[x].TextAlign = ContentAlignment.MiddleRight;
-                LblTop2[x].SetBounds((this.ClientSize.Width / 2) + 35, 101 + (31 * x) + 6, 15, 15);
-                LblTop2[x].Text = Convert.ToString(letters[x]);
+                LblTop2[x].SetBounds((this.ClientSize.Width / 2) + 35, 106 + (31 * x) + 6, 15, 15);
+                LblTop2[x].Text = Convert.ToString(letters[8 - x]);
+                LblTop2[x].BackColor = Color.LightBlue;
 
+                LblSide1[x] = new Label();
+                LblSide1[x].Font = new Font(LblTop1[x].Font, FontStyle.Bold);
+                LblSide1[x].TextAlign = ContentAlignment.MiddleLeft;
+                LblSide1[x].SetBounds(((this.ClientSize.Width / 2) - 45) - (31 * x), 90, 15, 15);
+                LblSide1[x].Text = Convert.ToString(x + 1);
+                LblSide1[x].BackColor = Color.LightBlue;
+
+                LblSide2[x] = new Label();
+                LblSide2[x].Font = new Font(LblTop1[x].Font, FontStyle.Bold);
+                LblSide2[x].TextAlign = ContentAlignment.MiddleLeft;
+                LblSide2[x].SetBounds(((this.ClientSize.Width / 2) + 55) + (31 * x), 90, 15, 15);
+                LblSide2[x].Text = Convert.ToString(x + 1);
+                LblSide2[x].BackColor = Color.LightBlue;
 
                 Controls.Add(LblTop1[x]);
                 Controls.Add(LblTop2[x]);
+                Controls.Add(LblSide1[x]);
+                Controls.Add(LblSide2[x]);
                 for (int y = 0; y < BtnPlayer1Grid.GetLength(1); y++)
                 {
                     // Create all buttons on the grid.
-                    BtnPlayer1Grid[x, y].SetBounds(((this.ClientSize.Width / 2) - 50) - (31 * y), 101 + (31 * x), 25, 25);
-                    BtnPlayer2Grid[x, y].SetBounds(((this.ClientSize.Width / 2) + 50) + (31 * y), 349 - (31 * x), 25, 25);
+                    BtnPlayer1Grid[x, y].SetBounds(((this.ClientSize.Width / 2) - 50) - (31 * y), 106 + (31 * x), 25, 25);
+                    BtnPlayer2Grid[x, y].SetBounds(((this.ClientSize.Width / 2) + 50) + (31 * y), 353 - (31 * x), 25, 25);
 
                     BtnPlayer1Grid[x, y].Click -= BtnPlayer1GridEvent_Click;
                     BtnPlayer2Grid[x, y].Click -= BtnPlayer1GridEvent_Click;
@@ -1902,58 +2008,63 @@ namespace GridGame
 
                     BtnPlayer2Grid[x, y].BackColor = Color.PowderBlue;
 
-                    // labels for scoring and turn identification
-                    scoreP1.SetBounds(((this.ClientSize.Width / 2) - 49), 50, 27, 25);
-                    scoreP2.SetBounds(((this.ClientSize.Width / 2) + 50), 50, 27, 25);
-                    scoreP1.TextAlign = HorizontalAlignment.Center;
-                    scoreP2.TextAlign = HorizontalAlignment.Center;
-                    scoreP1.ForeColor = Color.Blue;
-                    scoreP2.ForeColor = Color.Red;
-                    scoreP1.Font = menuFont;
-                    scoreP2.Font = menuFont;
-                    scoreP1.Text = Convert.ToString(gameSettings.getScore1());
-                    scoreP2.Text = Convert.ToString(gameSettings.getScore2());
-                    scoreP1.ReadOnly = true;
-                    scoreP2.ReadOnly = true;
-                    scoreP1.BorderStyle = BorderStyle.None;
-                    scoreP2.BorderStyle = BorderStyle.None;
-                    scoreP1.BackColor = this.BackColor;
-                    scoreP2.BackColor = this.BackColor;
-
-                    lblPlayerTurn.SetBounds((this.ClientSize.Width / 2) - 67, 400, 250, 25);
-                    lblPlayerTurn.Font = menuFont;
-                    lblPlayerTurn.Text = "Player 1's Turn";
-
-                    // labels for each player's board identification
-                    Label lblP1 = new Label();
-                    Label lblP2 = new Label();
-                    lblP1.SetBounds(((this.ClientSize.Width / 2) - 100), (this.ClientSize.Height / 2) - 223, 50, 25);
-                    lblP2.SetBounds(((this.ClientSize.Width / 2) + 92), (this.ClientSize.Height / 2) - 223, 50, 25);
-                    lblP1.Font = menuFont;
-                    lblP2.Font = menuFont;
-                    lblP1.Text = "P1";
-                    lblP2.Text = "P2";
-                    lblP1.ForeColor = Color.Blue;
-                    lblP2.ForeColor = Color.Red;
-
                     Controls.Add(BtnPlayer1Grid[x, y]);
                     Controls.Add(BtnPlayer2Grid[x, y]);
-                    Controls.Add(scoreP1);
-                    Controls.Add(scoreP2);
-                    Controls.Add(lblPlayerTurn);
-                    Controls.Add(lblP1);
-                    Controls.Add(lblP2);
-
-                    // timer code
-                    lblTimer.Font = menuFont;
-                    counterSet();
-                    //lblTimer.Text = Convert.ToString(count);
-                    lblTimer.SetBounds(((this.ClientSize.Width / 2) - 2), (this.ClientSize.Height / 2) - 223, 500, 25);
-                    Controls.Add(lblTimer);
-
-                    startTick();
                 }
             }
+
+            // timer code
+            lblTimer.Font = menuFont;
+            counterSet();
+            //lblTimer.Text = Convert.ToString(count);
+            lblTimer.SetBounds(((this.ClientSize.Width / 2) - 2), (this.ClientSize.Height / 2) - 223, 40, 25);
+            Controls.Add(lblTimer);
+
+            // labels for scoring and turn identification
+            scoreP1.SetBounds(((this.ClientSize.Width / 2) - 50), 50, 27, 25);
+            scoreP2.SetBounds(((this.ClientSize.Width / 2) + 50), 50, 27, 25);
+            scoreP1.TextAlign = HorizontalAlignment.Center;
+            scoreP2.TextAlign = HorizontalAlignment.Center;
+            scoreP1.ForeColor = Color.Blue;
+            scoreP2.ForeColor = Color.Red;
+            scoreP1.Font = menuFont;
+            scoreP2.Font = menuFont;
+            scoreP1.Text = Convert.ToString(gameSettings.getScore1());
+            scoreP2.Text = Convert.ToString(gameSettings.getScore2());
+            scoreP1.ReadOnly = true;
+            scoreP2.ReadOnly = true;
+            scoreP1.BorderStyle = BorderStyle.None;
+            scoreP2.BorderStyle = BorderStyle.None;
+            scoreP1.BackColor = this.BackColor;
+            scoreP2.BackColor = this.BackColor;
+
+            lblPlayerTurn.SetBounds((this.ClientSize.Width / 2) - 67, 400, 250, 25);
+            lblPlayerTurn.Font = menuFont;
+            lblPlayerTurn.Text = "Player 1's Turn";
+
+            // labels for each player's board identification
+            Label lblP1 = new Label();
+            Label lblP2 = new Label();
+            lblP1.SetBounds(((this.ClientSize.Width / 2) - 100), (this.ClientSize.Height / 2) - 223, 50, 25);
+            lblP2.SetBounds(((this.ClientSize.Width / 2) + 78), (this.ClientSize.Height / 2) - 223, 50, 25);
+            lblP1.Font = menuFont;
+            lblP2.Font = menuFont;
+            lblP1.Text = "P1";
+            lblP2.Text = "P2";
+            lblP2.TextAlign = ContentAlignment.TopRight;
+            lblP1.ForeColor = Color.Blue;
+            lblP2.ForeColor = Color.Red;
+
+            startTick();
+            Controls.Add(lblP1);
+            Controls.Add(lblP2);
+            Controls.Add(scoreP1);
+            Controls.Add(scoreP2);
+            Controls.Add(lblPlayerTurn);
+
+            pnlTop.SendToBack();
+            pnlCentre.SendToBack();
+            pnlBottom.SendToBack();
         }
 
         // starts timer
