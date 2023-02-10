@@ -1,4 +1,6 @@
-﻿using System;
+﻿// Team 4: Kayee Liu, Thomas Gourlay and Oliver Shearer
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -1758,9 +1760,9 @@ namespace GridGame
             Button btnRules = new Button();
             Button btnScores = new Button();
 
-            btnStart.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 60, 150, 50);
-            btnRules.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 120, 150, 50);
-            btnScores.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 180, 150, 50);
+            btnStart.SetBounds(this.ClientSize.Width / 2 - 75, this.ClientSize.Height / 2 + 60, 150, 50);
+            btnRules.SetBounds(this.ClientSize.Width / 2 - 75, this.ClientSize.Height / 2 + 120, 150, 50);
+            btnScores.SetBounds(this.ClientSize.Width / 2 - 75, this.ClientSize.Height / 2 + 180, 150, 50);
 
             btnStart.Font = menuFont;
             btnRules.Font = menuFont;
@@ -1772,7 +1774,7 @@ namespace GridGame
             PictureBox picBoat = new PictureBox();
             picBoat.ImageLocation = "../../Battleship.png";
             picBoat.Size = new Size(700, 400);
-            picBoat.Location = new Point(this.ClientSize.Width / 2 - 230, this.ClientSize.Height / 2 - 230);
+            picBoat.Location = new Point(this.ClientSize.Width / 2 - 240, this.ClientSize.Height / 2 - 230);
             picBoat.BackColor = Color.Transparent;
             // Event handlers for each button.
             btnStart.Click += new EventHandler(this.btnStartEvent_Click);
@@ -2219,17 +2221,22 @@ namespace GridGame
         {
             clearForm();
 
+            Panel pnlBack = new Panel();
             Label lblWinner = new Label();
             Button btnPlayAgain = new Button();
             Button btnMainMenu = new Button();
             Font titleFont = new Font("Times New Roman", 40.0f);
 
+            pnlBack.SetBounds(this.ClientSize.Width / 2 - 300, 100, 600, 350);
+            pnlBack.BackColor = Color.LightBlue;
+            Controls.Add(pnlBack);
+
             btnPlayAgain.Text = "Play Again";
             btnMainMenu.Text = "Main Menu";
 
-            lblWinner.SetBounds(((int)ClientSize.Width / 2) - 195, 100, 600, 100);
-            btnPlayAgain.SetBounds(this.ClientSize.Width / 2 - 112, this.ClientSize.Height / 2, 200, 50);
-            btnMainMenu.SetBounds(this.ClientSize.Width / 2 - 112, this.ClientSize.Height / 2 + 75, 200, 50);
+            lblWinner.SetBounds(((int)ClientSize.Width / 2) - 300, 100, 600, 100);
+            btnPlayAgain.SetBounds(this.ClientSize.Width / 2 - 100, this.ClientSize.Height / 2, 200, 50);
+            btnMainMenu.SetBounds(this.ClientSize.Width / 2 - 100, this.ClientSize.Height / 2 + 75, 200, 50);
 
             btnPlayAgain.Click += new EventHandler(this.btnPlayAgain_Click);
             btnMainMenu.Click += new EventHandler(this.btnRunMenu_Click);
@@ -2260,6 +2267,7 @@ namespace GridGame
             Controls.Add(lblWinner);
             Controls.Add(btnPlayAgain);
             Controls.Add(btnMainMenu);
+            pnlBack.SendToBack();
         }
 
         // enters name after game ends for submission to leaderboard
@@ -2272,7 +2280,7 @@ namespace GridGame
             }
 
             clearForm();
-
+            
             Label lbl = new Label();
             Button btnSubmit = new Button();
             pName.MaxLength = 10;
@@ -2282,12 +2290,13 @@ namespace GridGame
                 lbl.Text = "Enter Player 1's name (10 char max): ";
             else if (scoreP2.Text == Convert.ToString(17) && !gameSettings.getAI())
                 lbl.Text = "Enter Player 2's name (10 char max): ";
-            lbl.SetBounds(this.ClientSize.Width / 2 - 200, this.ClientSize.Height / 2 - 75, 450, 50);
+            lbl.TextAlign = ContentAlignment.MiddleCenter;
+            lbl.SetBounds(this.ClientSize.Width / 2 - 225, this.ClientSize.Height / 2 - 75, 450, 50);
             pName.Font = menuFont;
-            pName.SetBounds(this.ClientSize.Width / 2 - 100, this.ClientSize.Height / 2, 150, 50);
+            pName.SetBounds(this.ClientSize.Width / 2 - 75, this.ClientSize.Height / 2, 150, 50);
             btnSubmit.Font = menuFont;
             btnSubmit.Text = "Submit";
-            btnSubmit.SetBounds(this.ClientSize.Width / 2 - 100, this.ClientSize.Height / 2 + 75, 150, 50);
+            btnSubmit.SetBounds(this.ClientSize.Width / 2 - 75, this.ClientSize.Height / 2 + 75, 150, 50);
             btnSubmit.Click += new EventHandler(btnEnterNameEvent_Click);
 
             Controls.Add(lbl);
@@ -2350,14 +2359,20 @@ namespace GridGame
         {
             clearForm();
 
-            Label title = new Label();
-            Label[] scores = new Label[3];
+            Label lblTitle = new Label();
+            Label[] lblScores = new Label[3];
             Button btnHome = new Button();
+            Panel pnlBack = new Panel();
 
-            title.Text = "Games with Least Amount of Turns To Win";
-            title.Font = menuFont;
-            title.SetBounds(this.ClientSize.Width / 2 - 193, 75, 450, 50);
+            lblTitle.Text = "Games with Least Amount of Turns To Win";
+            lblTitle.Font = menuFont;
+            lblTitle.TextAlign = ContentAlignment.MiddleCenter;
+            lblTitle.SetBounds(this.ClientSize.Width / 2 - 225, 75, 450, 50);
 
+            pnlBack.BackColor = Color.LightBlue;
+            pnlBack.SetBounds(this.ClientSize.Width / 2 - 225, 125, 450, 360);
+
+            Controls.Add(pnlBack);
             string[] text = readFile();
             string[] names = new string[3];
             string[] turns = new string[3];
@@ -2383,21 +2398,24 @@ namespace GridGame
             }
 
             // configuring labels to match leaderboard information
-            for (int i = 0; i < scores.Length; i++)
+            for (int i = 0; i < lblScores.Length; i++)
             {
-                scores[i] = new Label();
-                scores[i].Font = menuFont;
-                scores[i].Text = (i + 1) + ". " + names[i] + " : " + turns[i];
-                scores[i].SetBounds(this.ClientSize.Width / 2 - 50, (this.ClientSize.Height / 2 - 75) + (50 * i), 200, 50);
-                Controls.Add(scores[i]);
+                lblScores[i] = new Label();
+                lblScores[i].Font = menuFont;
+                lblScores[i].Text = (i + 1) + ". " + names[i] + " : " + turns[i];
+                lblScores[i].TextAlign = ContentAlignment.MiddleCenter;
+                lblScores[i].SetBounds(this.ClientSize.Width / 2 - 100, (this.ClientSize.Height / 2 - 85) + (50 * i), 200, 50);
+                lblScores[i].BackColor = Color.LightBlue;
+                Controls.Add(lblScores[i]);
             }
 
             btnHome.Font = menuFont;
             btnHome.Text = "Main Menu";
-            btnHome.SetBounds(this.ClientSize.Width / 2 - 65, this.ClientSize.Height / 2 + 125, 150, 50);
+            btnHome.SetBounds(this.ClientSize.Width / 2 - 75, this.ClientSize.Height / 2 + 125, 150, 50);
             btnHome.Click += new EventHandler(btnRunMenu_Click);
-            Controls.Add(title);
+            Controls.Add(lblTitle);
             Controls.Add(btnHome);
+            pnlBack.SendToBack();
         }
 
         // check if new score is valid to be written to the leaderboard file
