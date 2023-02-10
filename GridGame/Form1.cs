@@ -23,21 +23,14 @@ namespace GridGame
 {
     public partial class Form1 : Form
     {
-
-        /* have put this here as it may come in use later.
-        *  idea was hold all needed variables for the gameplay.
-        */
-
+        // Holds information pertaining to a player object.
         class Player
         {
+            // Player's side of the board.
             private bool[,] board = new bool[9, 9];
             private int score = 0;
 
-            public void setBoard(bool[,] board)
-            {
-                this.board = board;
-
-            }
+            // Reset the board to have no placements.
             public void clearBoard()
             {
                 for (int x = 0; x < board.GetLength(0); x++)
@@ -48,37 +41,37 @@ namespace GridGame
                     }
                 }
             }
+            // Get a specific cell of the player's board.
             public bool getBoardCellState(int x, int y)
             {
                 return board[x, y];
             }
+            // Set a specific cell of the player's board.
             public void setBoardCellState(int x, int y, bool state)
             {
                 board[x, y] = state;
             }
+            // Set a player's score.
             public void setScore(int score)
             {
                 this.score = score;
             }
-            public bool[,] getBoard()
-            {
-                return board;
-            }
+            // Get a player's score.
             public int getScore()
             {
                 return score;
             }
-
-
         }
+        // Holds all details for the battleship game.
         class GameSettings
         {
-            private Player[] player = new Player[2];
-            private bool player1Turn = true;
-            private bool ai = false;
-            private int lastHitX, lastHitY, difficulty, totalTurns, boardLength;
-            private string playerName;
+            private Player[] player = new Player[2];                                // Player elements
+            private bool player1Turn = true;                                        // Hold's the current player's turn.
+            private bool ai = false;                                                // Indicator for AI mode.
+            private int lastHitX, lastHitY, difficulty, totalTurns, boardLength;    // lastHitX & lastHitY used for AI intellect
+            private string playerName;                                              // Used for the winner of a match in leaderboards.
 
+            // Sets all of the initial values for the game upon load.
             public GameSettings()
             {
                 difficulty = 0;
@@ -92,78 +85,83 @@ namespace GridGame
                 totalTurns = 0;
                 boardLength = 9;
             }
+            // Set a player's name
             public void setPlayerName(string name)
             {
                 playerName = name;
             }
+            // Get the game board length.
             public int getBoardLength()
             {
                 return boardLength;
             }
+            // Accesses a player's information.
             public Player getPlayer(int playerNumber)
             {
                 return player[playerNumber];
             }
-
+            // Increase counter for total turns by 1.
             public void incrementTurns()
             {
                 totalTurns++;
             }
-
+            // Reset turns after a match is reset.
             public void resetTurns()
             {
                 totalTurns = 0;
             }
-
+            // Sets the difficulty for an AI.
             public void setDifficulty(int diff)
             {
                 difficulty = diff;
             }
+            // Enable/Disable the AI.
             public void setAI(bool ai)
             {
                 this.ai = ai;
             }
+            // Set the current player's turn.
             public void setPlayer1Turn(bool turn)
             {
                 player1Turn = turn;
             }
-
+            // Get the total number of turns played so far.
             public int getTurns()
             {
                 return totalTurns;
             }
-
+            // Get the player/winner's name.
             public string getPlayerName()
             {
                 return playerName;
             }
-
+            // Checks the current difficulty setting.
             public int getDifficulty()
             {
                 return difficulty;
             }
+            // Checks if AI is enabled.
             public bool getAI()
             {
                 return ai;
             }
-            
+            // Checks whose turn it is.
             public bool getPlayer1Turn()
             {
                 return player1Turn;
             }
-            
+            // Removes all turns across both game boards.
             public void clearBoards()
             {
                 player[0].clearBoard();
                 player[1].clearBoard();
             }
-            
+            // Reset the scores of both players.
             public void resetScores()
             {
                 player[0].setScore(0);
                 player[1].setScore(0);
             }
-
             public int getLastHitX()
             {
                 return lastHitX;
@@ -185,29 +183,23 @@ namespace GridGame
             }
         }
 
+        // All elements that need to be public in order to be modified or receive data.
         Label lblPlayerTurn = new Label();
         TextBox scoreP1 = new TextBox();
         TextBox scoreP2 = new TextBox();
         TextBox pName = new TextBox();
+        Button[,] BtnPlayer1Grid;
+        Button[,] BtnPlayer2Grid;
+        GameSettings gameSettings = new GameSettings();
 
-        //sound and music control lines of code
+        // Sound and music control for lines of code
         bool sound = true;
         SoundPlayer explosion = new SoundPlayer(@"../../explosion.wav");
         SoundPlayer music = new SoundPlayer(@"../../waves.wav");
         Font menuFont = new Font("Times New Roman", 18.0f);
         Image ocean = Image.FromFile(@"../../ocean.jpg");
-        /* Had to make the grids for the selection screen global variables, so that the necessary checks can be performed.
-         * i.e. when you confirm your ship placements, isSelectionValid() must be called.
-         * you can't really use the button grid as a parameter into the method as they're already placed
-         * BtnPlayer2Grid represents the CPU, but in case we do 2 player, i've made it public too.
-        */
-        Button[,] BtnPlayer1Grid;
-        Button[,] BtnPlayer2Grid;
-        GameSettings gameSettings = new GameSettings();
 
-        Color[] shipColours = { Color.DimGray, Color.DarkGray, Color.LightSlateGray, Color.DarkSlateGray };
-
-        // timer variables
+        // Timer variables
         int count = 0;
         Label lblTimer = new Label();
         Timer t = new Timer();
@@ -217,33 +209,36 @@ namespace GridGame
             InitializeComponent();
             menuStrip();
             initMenu();
+            // Adds sound button across each screen.
             soundButton(sound);
             t.Tick += new EventHandler(tickEvent);
-        }
-
-        // needed to access code easily on opening the files
-        private void Form1_Load(object sender, EventArgs e)
-        {
+            // Set background to an ocean.
             this.BackgroundImageLayout = ImageLayout.Stretch;
             this.BackgroundImage = ocean;
+        }
+
+        // needed to access code
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            
         }
         // Ship Selection Screen visuals.
         private void initShipSelect()
         {
+            // Declare grids and panels.
             Panel pnlBackGround = new Panel();
             BtnPlayer1Grid = new Button[9, 9];
             BtnPlayer2Grid = new Button[9, 9];
-
             Button BtnConfirm = new Button();
+            // Labels for the grid.
             Label LblInstructions = new Label();
-            // still need to add these to the side of the grid.
             Label[] LblGridTop = new Label[9];
             Label[] LblGridSide = new Label[9];
 
             pnlBackGround.BorderStyle = BorderStyle.FixedSingle;
             pnlBackGround.SetBounds((int)(this.ClientSize.Width / 4), 15, (this.ClientSize.Width / 2), this.ClientSize.Height - 30);
             pnlBackGround.BackColor = Color.LightBlue;
-
+            // Change instruction text depending on whose grid is used
             if (gameSettings.getPlayer1Turn())
             {
                 LblInstructions.ForeColor = Color.Blue;
@@ -259,6 +254,7 @@ namespace GridGame
             LblInstructions.Font = new Font(menuFont, FontStyle.Bold);
             LblInstructions.BackColor = Color.LightBlue;
 
+            // Letters used on side of grid to emulate real battleships.
             char[] letters = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I' };
 
             BtnConfirm.SetBounds((int)(this.ClientSize.Width / 2) - 50, (int)(this.ClientSize.Height / 1.2), 100, 50);
@@ -268,21 +264,21 @@ namespace GridGame
 
             for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
             {
-
+                // Set labels on top of the buttons
                 LblGridTop[x] = new Label();
                 LblGridTop[x].Text = Convert.ToString(letters[x]);
                 LblGridTop[x].TextAlign = ContentAlignment.MiddleLeft;
                 LblGridTop[x].Font = new Font(LblGridTop[x].Font, FontStyle.Bold);
                 LblGridTop[x].BackColor = Color.LightBlue;
                 LblGridTop[x].SetBounds((int)((this.ClientSize.Width / 3.25) + (40 * x)) + 15, ((int)(this.ClientSize.Height / 7.33333)) - 15, 12, 15);
-
+                // Set labels along the side of the buttons.
                 LblGridSide[x] = new Label();
                 LblGridSide[x].SetBounds((int)(this.ClientSize.Width / 3.25) - 15, ((int)(this.ClientSize.Height / 7.33333)) + (40 * x) + 14, 10, 15);
                 LblGridSide[x].Text = Convert.ToString(x + 1);
                 LblGridSide[x].Font = new Font(LblGridSide[x].Font, FontStyle.Bold);
                 LblGridSide[x].TextAlign = ContentAlignment.MiddleLeft;
                 LblGridSide[x].BackColor = Color.LightBlue;
-
+                // Add labels
                 Controls.Add(LblGridTop[x]);
                 Controls.Add(LblGridSide[x]);
                 for (int y = 0; y < BtnPlayer1Grid.GetLength(1); y++)
@@ -300,7 +296,7 @@ namespace GridGame
                     BtnPlayer1Grid[x, y].Click += new EventHandler(this.BtnPlayer1GridEvent_Click);
                     BtnPlayer2Grid[x, y].Click += new EventHandler(this.BtnPlayer1GridEvent_Click);
 
-
+                    // Show the grid for the respective player.
                     if (gameSettings.getPlayer1Turn())
                         Controls.Add(BtnPlayer1Grid[x, y]);
                     else if (!gameSettings.getPlayer1Turn() && gameSettings.getDifficulty() == 3)
@@ -309,34 +305,16 @@ namespace GridGame
                     }
                 }
             }
+            // Add in all elements.
             Controls.Add(pnlBackGround);
             Controls.Add(LblInstructions);
             Controls.Add(BtnConfirm);
             pnlBackGround.SendToBack();
         }
-        // debug for AI ship generation
-        void displayDebugScreenForAIShips()
-        {
-            BtnPlayer2Grid = new Button[9, 9];
-            for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
-            {
-                for (int y = 0; y < BtnPlayer1Grid.GetLength(1); y++)
-                {
-                    // Create all buttons on the grid.
-                    BtnPlayer2Grid[x, y] = new Button();
-                    BtnPlayer2Grid[x, y].Text = Convert.ToString(x + "," + y);
-                    BtnPlayer2Grid[x, y].SetBounds((int)(this.ClientSize.Width / 3.33333) + (40 * x), ((int)(this.ClientSize.Height / 9)) + (40 * y), 40, 40);
-                    BtnPlayer2Grid[x, y].BackColor = Color.PowderBlue;
-
-                    BtnPlayer2Grid[x, y].Click += new EventHandler(this.BtnPlayer1GridEvent_Click);
-
-                    Controls.Add(BtnPlayer2Grid[x, y]);
-                }
-            }
-            randomiseSelection();
-        }
+        // Randomise the AI's ships.
         void randomiseSelection()
         {
+            // Clear the board in case there's anything left.
             gameSettings.getPlayer(1).clearBoard();
             Random random = new Random();
 
@@ -345,9 +323,10 @@ namespace GridGame
             int rdmX;
             int rdmY;
             bool firstThirdAdded = false;
-
+            // While there are still ships to add.
             while (shipSize > 1)
             {
+                // Randomise a starting coordinate.
                 rdmX = random.Next(0, 9);
                 rdmY = random.Next(0, 9);
                 cointoss = random.Next(2);
@@ -357,11 +336,11 @@ namespace GridGame
                     bool validated = false;
                     while (!validated)
                     {
-                        // Ship can be placed towards right side without going out of bounds
+                        // Ship must be placed towards right side to avoid going out of bounds
                         if (rdmX + (shipSize - 1) < gameSettings.getBoardLength())
                         {
                             bool shipOverlaps = false;
-                            // checks if the placement will overlap with an existing ship.
+                            // Checks if the placement will overlap with an existing ship.
                             for (int x = 0; x < shipSize; x++)
                             {
                                 if (gameSettings.getPlayer(1).getBoardCellState(rdmX + x, rdmY))
@@ -373,13 +352,16 @@ namespace GridGame
                             if (shipOverlaps == true)
                             {
                                 bool foundValidPlacement = false;
+                                // Check the next row over to see if the ship can be placed there.
                                 int y = rdmY + 1;
                                 if (y > 8)
                                 {
                                     y = 0;
                                 }
+                                // While a valid placement is yet to be found.
                                 while (!foundValidPlacement && y != rdmY)
                                 {
+                                    // Reset y coordinate if it reaches the outer bounds.
                                     if (y > 8)
                                     {
                                         y = 0;
@@ -387,6 +369,7 @@ namespace GridGame
                                     bool shipCanFit = true;
                                     for (int x = 0; x < shipSize; x++)
                                     {
+                                        // If the ship cannot fit in this spot.
                                         if (gameSettings.getPlayer(1).getBoardCellState(rdmX + x, y))
                                         {
                                             shipCanFit = false;
@@ -397,44 +380,50 @@ namespace GridGame
                                     {
                                         foundValidPlacement = true;
                                     }
+                                    // Search the next cell over.
                                     else
                                     {
                                         y++;
                                     }
                                 }
+                                // Ship can be placed here.
                                 if (foundValidPlacement)
                                 {
+                                    // Set the new Y coordinate.
                                     rdmY = y;
                                     for (int x = 0; x < shipSize; x++)
                                     {
-                                        //BtnPlayer2Grid[rdmX + x, rdmY].BackColor = shipColours[(shipSize - 2)];
+                                        // Add this new ship onto the AI's grid.
                                         gameSettings.getPlayer(1).setBoardCellState(rdmX + x, rdmY, true);
                                     }
                                     validated = true;
                                 }
                                 else
                                 {
+                                    // Randomise another coordinate and run the checks again.
                                     rdmX = random.Next(0, 9);
                                     rdmY = random.Next(0, 9);
                                 }
                             }
+                            // If the ship doesn't overlap with anything first try.
                             else
                             {
+                                // Add this ship straight into the grid.
                                 for (int x = 0; x < shipSize; x++)
                                 {
-                                    //BtnPlayer2Grid[rdmX + x, rdmY].BackColor = shipColours[(shipSize - 2)];
                                     gameSettings.getPlayer(1).setBoardCellState(rdmX + x, rdmY, true);
                                 }
                                 validated = true;
                             }
                         }
-                        // Ship can be placed towards left side without going out of bounds
+                        // Ship must be placed towards left side to avoid going out of bounds
                         else
                         {
                             bool shipOverlaps = false;
-                            // checks if the placement will overlap with an existing ship.
+                            // Checks if the placement will overlap with an existing ship.
                             for (int x = 0; x < shipSize; x++)
                             {
+                                // If the ship cannot fit in this spot.
                                 if (gameSettings.getPlayer(1).getBoardCellState(rdmX - x, rdmY))
                                 {
                                     shipOverlaps = true;
@@ -444,13 +433,16 @@ namespace GridGame
                             if (shipOverlaps == true)
                             {
                                 bool foundValidPlacement = false;
+                                // Check the next row over to see if the ship can be placed there.
                                 int y = rdmY - 1;
                                 if (y < 0)
                                 {
                                     y = 8;
                                 }
+                                // While a valid placement is yet to be found.
                                 while (!foundValidPlacement && y != rdmY)
                                 {
+                                    // Reset y coordinate if it reaches the outer bounds.
                                     if (y < 0)
                                     {
                                         y = 8;
@@ -458,6 +450,7 @@ namespace GridGame
                                     bool shipCanFit = true;
                                     for (int x = 0; x < shipSize; x++)
                                     {
+                                        // If the ship cannot fit in this spot.
                                         if (gameSettings.getPlayer(1).getBoardCellState(rdmX - x, y))
                                         {
                                             shipCanFit = false;
@@ -470,30 +463,34 @@ namespace GridGame
                                     }
                                     else
                                     {
+                                        // Check the next row over.
                                         y++;
                                     }
                                 }
                                 if (foundValidPlacement)
                                 {
+                                    // Set the new Y coordinate.
                                     rdmY = y;
                                     for (int x = 0; x < shipSize; x++)
                                     {
-                                        //BtnPlayer2Grid[rdmX - x, rdmY].BackColor = shipColours[(shipSize - 2)];
+                                        // Add this ship into the board.
                                         gameSettings.getPlayer(1).setBoardCellState(rdmX - x, rdmY, true);
                                     }
                                     validated = true;
                                 }
                                 else
                                 {
+                                    // Randomise another coordinate and run the checks again.
                                     rdmX = random.Next(0, 9);
                                     rdmY = random.Next(0, 9);
                                 }
                             }
+                            // Ship doesn't overlap, ignore checks.
                             else
                             {
+                                // Add ship to grid.
                                 for (int x = 0; x < shipSize; x++)
                                 {
-                                    //BtnPlayer2Grid[rdmX - x, rdmY].BackColor = shipColours[(shipSize - 2)];
                                     gameSettings.getPlayer(1).setBoardCellState(rdmX - x, rdmY, true);
                                 }
                                 validated = true;
@@ -511,9 +508,10 @@ namespace GridGame
                     {
                         if (rdmY + (shipSize - 1) < gameSettings.getBoardLength())
                         {
-                            // checks if the placement will overlap with an existing ship.
+                            // Checks if the placement will overlap with an existing ship.
                             for (int y = 0; y < shipSize; y++)
                             {
+                                // If the ship cannot fit in this spot.
                                 if (gameSettings.getPlayer(1).getBoardCellState(rdmX, rdmY + y))
                                 {
                                     shipOverlaps = true;
@@ -522,13 +520,16 @@ namespace GridGame
                             if (shipOverlaps == true)
                             {
                                 bool foundValidPlacement = false;
+                                // Check the next row over to see if the ship can be placed there.
                                 int x = rdmX + 1;
                                 if (x > 8)
                                 {
                                     x = 0;
                                 }
+                                // While a valid placement is yet to be found.
                                 while (!foundValidPlacement && x != rdmX)
                                 {
+                                    // Keep value within bounds.
                                     if (x > 8)
                                     {
                                         x = 0;
@@ -536,6 +537,7 @@ namespace GridGame
                                     bool shipCanFit = true;
                                     for (int y = 0; y < shipSize; y++)
                                     {
+                                        // If the ship cannot fit in this spot.
                                         if (gameSettings.getPlayer(1).getBoardCellState(x, rdmY + y))
                                         {
                                             shipCanFit = false;
@@ -547,30 +549,33 @@ namespace GridGame
                                     }
                                     else
                                     {
+                                        // Check the next row over.
                                         x++;
                                     }
                                 }
                                 if (foundValidPlacement)
                                 {
+                                    // Set new X coordinate.
                                     rdmX = x;
                                     for (int y = 0; y < shipSize; y++)
                                     {
-                                        //BtnPlayer2Grid[rdmX, rdmY + y].BackColor = shipColours[(shipSize - 2)];
+                                        // Add this ship into the board.
                                         gameSettings.getPlayer(1).setBoardCellState(rdmX, rdmY + y, true);
                                     }
                                     validated = true;
                                 }
                                 else
                                 {
+                                    // Randomise a new starting location and run checks again.
                                     rdmX = random.Next(0, 9);
                                     rdmY = random.Next(0, 9);
                                 }
                             }
                             else
                             {
+                                // Ship doesn't overlap, add to board.
                                 for (int y = 0; y < shipSize; y++)
                                 {
-                                    //BtnPlayer2Grid[rdmX, rdmY + y].BackColor = shipColours[(shipSize - 2)];
                                     gameSettings.getPlayer(1).setBoardCellState(rdmX, rdmY + y, true);
                                 }
                                 validated = true;
@@ -590,13 +595,16 @@ namespace GridGame
                             if (shipOverlaps == true)
                             {
                                 bool foundValidPlacement = false;
+                                // Check the next row over.
                                 int x = rdmX - 1;
                                 if (x < 0)
                                 {
                                     x = 8;
                                 }
+                                // While a valid placement is yet to be found.
                                 while (!foundValidPlacement && x != rdmX)
                                 {
+                                    // Keeps coordinate within bounds.
                                     if (x < 0)
                                     {
                                         x = 8;
@@ -604,6 +612,7 @@ namespace GridGame
                                     bool shipCanFit = true;
                                     for (int y = 0; y < shipSize; y++)
                                     {
+                                        // If the ship overlaps with another in this coordinate.
                                         if (gameSettings.getPlayer(1).getBoardCellState(x, rdmY - y))
                                         {
                                             shipCanFit = false;
@@ -615,21 +624,25 @@ namespace GridGame
                                     }
                                     else
                                     {
+                                        // Run the check on the next row.
                                         x--;
                                     }
                                 }
+                                // Ship can go here.
                                 if (foundValidPlacement)
                                 {
+                                    // Move ship to this X.
                                     rdmX = x;
                                     for (int y = 0; y < shipSize; y++)
                                     {
-                                        //BtnPlayer2Grid[rdmX, rdmY - y].BackColor = shipColours[(shipSize - 2)];
+                                        // Add ship to board.
                                         gameSettings.getPlayer(1).setBoardCellState(rdmX, rdmY - y, true);
                                     }
                                     validated = true;
                                 }
                                 else
                                 {
+                                    // Randomise a new coordinate and run check again.
                                     rdmX = random.Next(0, 9);
                                     rdmY = random.Next(0, 9);
                                 }
@@ -638,7 +651,6 @@ namespace GridGame
                             {
                                 for (int y = 0; y < shipSize; y++)
                                 {
-                                    //BtnPlayer2Grid[rdmX, rdmY - y].BackColor = shipColours[(shipSize - 2)];
                                     gameSettings.getPlayer(1).setBoardCellState(rdmX, rdmY - y, true);
                                 }
                                 validated = true;
@@ -646,10 +658,12 @@ namespace GridGame
                         }
                     }
                 }
+                // Value doesn't decrement if both 3 ship-sizes haven't been placed.
                 if (shipSize == 3 && !firstThirdAdded)
                 {
                     firstThirdAdded = true;
                 }
+                // Add another ship.
                 else
                 {
                     shipSize--;
@@ -1104,13 +1118,14 @@ namespace GridGame
                     gameSettings.setPlayer1Turn(true);
                     startGame = true;
                 }
-
-                if (gameSettings.getDifficulty() != 3) //AI
+                // Match is against an AI.
+                if (gameSettings.getDifficulty() != 3) 
                 {
                     playGame();
                     randomiseSelection();
                 }
-                else if (startGame)//player vs player
+                // player vs player
+                else if (startGame)
                 {
                     playGame();
                 }
@@ -1160,19 +1175,23 @@ namespace GridGame
 
             bool foundFirstThree = false;
             bool validPlacements = true;
+            // Find all of the selected ships in the grid.
             for (int i = 5; i > 1; i--)
             {
+                // If a ship can't be found.
                 if (!findShipInSelection(i))
                 {
                     validPlacements = false;
                     break;
                 }
+                // Checks for two ships.
                 if (i == 3 && !foundFirstThree)
                 {
                     i++;
                     foundFirstThree = true;
                 }
             }
+            // If the ship placements aren't valid
             if (!validPlacements)
             {
                 MessageBox.Show("Your ship placements are not valid, please place your ships horizontally or vertically with at least 1 space between them. The valid ship sizes are: \n\nCarrier (5 boxes), \nBattleship (4 boxes) \nCruiser (3 boxes) \nSubmarine (3 boxes) \nDestroyer (2 boxes)", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1202,8 +1221,10 @@ namespace GridGame
                                 // Checks to see if the spaces in, above and around this ship are vacant.
                                 if (BtnPlayer1Grid[x + val, y].BackColor != Color.PowderBlue && BtnPlayer1Grid[x + val, y + 1].BackColor == Color.PowderBlue && BtnPlayer1Grid[x + val, y - 1].BackColor == Color.PowderBlue)
                                 {
+                                    // Checks space behind the ship
                                     if (val == 0 && x != 0)
                                     {
+                                        
                                         if (BtnPlayer1Grid[x - 1, y].BackColor != Color.PowderBlue)
                                         {
                                             val = 6;
@@ -1211,6 +1232,7 @@ namespace GridGame
                                         }
                                     }
                                     val++;
+                                    // Checks space in front of the ship
                                     if (x + amountToFind <= 8 && val == amountToFind)
                                     {
                                         if (BtnPlayer1Grid[x + amountToFind, y].BackColor != Color.PowderBlue)
@@ -1231,6 +1253,7 @@ namespace GridGame
                                 // Checks to see if the spaces in, and below this ship are vacant.
                                 if (BtnPlayer1Grid[x + val, y].BackColor != Color.PowderBlue && BtnPlayer1Grid[x + val, y + 1].BackColor == Color.PowderBlue)
                                 {
+                                    // Checks space behind the ship
                                     if (val == 0 && x != 0)
                                     {
                                         if (BtnPlayer1Grid[x - 1, y].BackColor != Color.PowderBlue)
@@ -1240,6 +1263,7 @@ namespace GridGame
                                         }
                                     }
                                     val++;
+                                    // Checks space in front of the ship
                                     if (x + amountToFind <= 8 && val == amountToFind)
                                     {
                                         if (BtnPlayer1Grid[x + amountToFind, y].BackColor != Color.PowderBlue)
@@ -1260,6 +1284,7 @@ namespace GridGame
                                 // Checks to see if the spaces in, and above this ship are vacant.
                                 if (BtnPlayer1Grid[x + val, y].BackColor != Color.PowderBlue && BtnPlayer1Grid[x + val, y - 1].BackColor == Color.PowderBlue)
                                 {
+                                    // Checks space behind the ship
                                     if (val == 0 && x != 0)
                                     {
                                         if (BtnPlayer1Grid[x - 1, y].BackColor != Color.PowderBlue)
@@ -1269,6 +1294,7 @@ namespace GridGame
                                         }
                                     }
                                     val++;
+                                    // Checks space in front of the ship.
                                     if (x + amountToFind <= 8 && val == amountToFind)
                                     {
                                         if (BtnPlayer1Grid[x + amountToFind, y].BackColor != Color.PowderBlue)
@@ -1330,8 +1356,10 @@ namespace GridGame
                         {
                             if (x != 0 && x != 8)
                             {
+                                // If there's nothing in, above, or below the ship placement.
                                 if (BtnPlayer1Grid[x, y + val].BackColor != Color.PowderBlue && BtnPlayer1Grid[x - 1, y + val].BackColor == Color.PowderBlue && BtnPlayer1Grid[x + 1, y + val].BackColor == Color.PowderBlue)
                                 {
+                                    // Checks space behind the ship.
                                     if (val == 0 && y != 0)
                                     {
                                         if (BtnPlayer1Grid[x, y - 1].BackColor != Color.PowderBlue)
@@ -1341,6 +1369,7 @@ namespace GridGame
                                         }
                                     }
                                     val++;
+                                    // Checks space in front of the ship
                                     if (y + amountToFind <= 8 && val == amountToFind)
                                     {
                                         if (BtnPlayer1Grid[x, y + amountToFind].BackColor != Color.PowderBlue)
@@ -1358,8 +1387,10 @@ namespace GridGame
                             }
                             else if (x == 0)
                             {
+                                // If there's nothing in, or below the ship placement.
                                 if (BtnPlayer1Grid[x, y + val].BackColor != Color.PowderBlue && BtnPlayer1Grid[x + 1, y + val].BackColor == Color.PowderBlue)
                                 {
+                                    // Checks space behind the ship.
                                     if (val == 0 && y != 0)
                                     {
                                         if (BtnPlayer1Grid[x, y - 1].BackColor != Color.PowderBlue)
@@ -1368,6 +1399,7 @@ namespace GridGame
                                         }
                                     }
                                     val++;
+                                    // Checks space in front of the ship
                                     if (y + amountToFind <= 8 && val == amountToFind)
                                     {
                                         if (BtnPlayer1Grid[x, y + amountToFind].BackColor != Color.PowderBlue)
@@ -1385,6 +1417,7 @@ namespace GridGame
                             }
                             else
                             {
+                                // If there's nothing in or above the ship placement.
                                 if (BtnPlayer1Grid[x, y + val].BackColor != Color.PowderBlue && BtnPlayer1Grid[x - 1, y + val].BackColor == Color.PowderBlue)
                                 {
                                     if (val == 0 && y != 0)
@@ -1719,6 +1752,7 @@ namespace GridGame
         // Display the main menu
         private void initMenu()
         {
+            // Reset this when loading the menu.
             gameSettings.setPlayer1Turn(true);
             Button btnStart = new Button();
             Button btnRules = new Button();
@@ -1734,21 +1768,21 @@ namespace GridGame
             btnStart.Text = "Start";
             btnRules.Text = "Rules";
             btnScores.Text = "Highscores";
-
-            PictureBox boat = new PictureBox();
-            boat.ImageLocation = "../../Battleship.png";
-            boat.Size = new Size(700, 400);
-            boat.Location = new Point(this.ClientSize.Width / 2 - 230, this.ClientSize.Height / 2 - 230);
-            boat.BackColor = Color.Transparent;
-
+            // Adds graphic of battleship.
+            PictureBox picBoat = new PictureBox();
+            picBoat.ImageLocation = "../../Battleship.png";
+            picBoat.Size = new Size(700, 400);
+            picBoat.Location = new Point(this.ClientSize.Width / 2 - 230, this.ClientSize.Height / 2 - 230);
+            picBoat.BackColor = Color.Transparent;
+            // Event handlers for each button.
             btnStart.Click += new EventHandler(this.btnStartEvent_Click);
             btnRules.Click += new EventHandler(this.btnRulesEvent_Click);
             btnScores.Click += new EventHandler(this.btnHighscoresEvent_Click);
-
+            // Add all elements.
             Controls.Add(btnStart);
             Controls.Add(btnRules);
             Controls.Add(btnScores);
-            Controls.Add(boat);
+            Controls.Add(picBoat);
         }
 
         // Display the difficulty menu
@@ -1761,13 +1795,13 @@ namespace GridGame
                 btns[i].Font = menuFont;
             }
 
-            PictureBox boat = new PictureBox();
-            boat.ImageLocation = "../../Battleship.png";
-            boat.Size = new Size(700, 275);
-            boat.Location = new Point(this.ClientSize.Width / 2 - 230, this.ClientSize.Height / 2 - 230);
-            boat.BackColor = Color.Transparent;
-            Controls.Add(boat);
-
+            PictureBox picBoat = new PictureBox();
+            picBoat.ImageLocation = "../../Battleship.png";
+            picBoat.Size = new Size(700, 275);
+            picBoat.Location = new Point(this.ClientSize.Width / 2 - 230, this.ClientSize.Height / 2 - 230);
+            picBoat.BackColor = Color.Transparent;
+            Controls.Add(picBoat);
+            // 
             btns[0].SetBounds(this.ClientSize.Width / 2 - 160, this.ClientSize.Height / 2 + 50, 100, 50);
             btns[1].SetBounds(this.ClientSize.Width / 2 - 45, this.ClientSize.Height / 2 + 50, 100, 50);
             btns[2].SetBounds(this.ClientSize.Width / 2 + 70, this.ClientSize.Height / 2 + 50, 100, 50);
@@ -1794,7 +1828,7 @@ namespace GridGame
         // (Clearance of form allows for switches between main menu to game screen)
         private void clearForm()
         {
-            //this.Controls.Clear();
+            // Remove all buttons.
             foreach (var btn in Controls.OfType<Button>().ToList())
             {
                 if (btn.Name == "btnSound")
@@ -1804,18 +1838,22 @@ namespace GridGame
 
                 Controls.Remove(btn);
             }
+            // Remove all labels.
             foreach (var lbl in Controls.OfType<Label>().ToList())
             {
                 Controls.Remove(lbl);
             }
+            // Remove all panels.
             foreach (var pnl in Controls.OfType<Panel>().ToList())
             {
                 Controls.Remove(pnl);
             }
+            // Remove all text boxes.
             foreach (var tBox in Controls.OfType<TextBox>().ToList())
             {
                 Controls.Remove(tBox);
             }
+            // Remove all images.
             foreach (var image in Controls.OfType<PictureBox>().ToList())
             {
                 Controls.Remove(image);
@@ -1823,12 +1861,9 @@ namespace GridGame
 
             t.Enabled = false;
 
-            //this.InitializeComponent();
-            //menuStrip();
-            //soundButton(sound);
         }
 
-        // sound button, responsible for toggling of in-game music/sounds
+        // Sound button, responsible for toggling of in-game music/sounds
         private void soundButton(bool sound)
         {
             Button btnSound = new Button();
@@ -1854,7 +1889,7 @@ namespace GridGame
             Controls.Add(btnSound);
         }
 
-        // sound toggle click event
+        // Sound toggle click event
         void btnSoundEvent_Click(object sender, EventArgs e)
         {
             if (!sound)
@@ -1862,14 +1897,14 @@ namespace GridGame
                 ((Button)sender).FlatAppearance.BorderColor = Color.Blue;
                 sound = true;
                 music.Play();
-                // toggle sound on
+                // Toggle sound on
             }
             else if (sound)
             {
                 ((Button)sender).FlatAppearance.BorderColor = Color.Red;
                 sound = false;
                 music.Stop();
-                // toggle sound off
+                // Toggle sound off
             }
         }
 
@@ -1891,7 +1926,7 @@ namespace GridGame
             clearForm();
             // Loads the ship selection screen, prior to a game starting.
 
-            // difficulty code handling, where 0 is easy, 1 is normal, 2 is hard, 3 is player vs player
+            // Difficulty code handling, where 0 is easy, 1 is normal, 2 is hard, 3 is player vs player
             if (((Button)sender).Text == "Easy")
             {
                 gameSettings.setDifficulty(0);
@@ -1956,10 +1991,12 @@ namespace GridGame
             Label[] LblSide1 = new Label[9];
             Label[] LblSide2 = new Label[9];
 
+            // Letters for the side labels.
             char[] letters = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I' };
 
             for (int x = 0; x < BtnPlayer1Grid.GetLength(0); x++)
             {
+                // Add all labels around the boards.
                 LblTop1[x] = new Label();
                 LblTop1[x].Font = new Font(LblTop1[x].Font, FontStyle.Bold);
                 LblTop1[x].TextAlign = ContentAlignment.MiddleLeft;
